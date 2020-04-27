@@ -3,11 +3,11 @@ Cross-compilation C unit testing environment with Unity, CMock, and Ceedling.
 
 ## Contents
 * Testing tools
-  * Ceedling 0.28.3
-  * CMock 2.4.5
-  * Unity 2.4.2
+  * [Ceedling](http://www.throwtheswitch.org/ceedling) 0.29.1
+  * [CMock](http://www.throwtheswitch.org/cmock) 2.5.1
+  * [Unity](http://www.throwtheswitch.org/unity) 2.5.0
 * C support
-  * CException 1.3.1
+  * [CException](http://www.throwtheswitch.org/cexception) 1.3.2
   * [libc-dev 0.7.1](https://pkgs.alpinelinux.org/package/v3.8/main/x86/libc-dev)
 * Environment
   * [coreutils 8.29](https://pkgs.alpinelinux.org/package/v3.8/main/x86/coreutils)

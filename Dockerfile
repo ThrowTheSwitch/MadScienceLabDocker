@@ -4,11 +4,11 @@ MAINTAINER Michael Karlesky <michael@karlesky.net>
 
 
 RUN apk --no-cache add \
-	coreutils \
-	gcc \
+  coreutils \
+  gcc \
   gcovr \
   valgrind \
-	libc-dev
+  libc-dev
 
 ##
 ## Copy assets for inclusion in image
