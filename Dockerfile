@@ -1,4 +1,4 @@
-FROM ruby:2.4.5-alpine3.8
+FROM ruby:2.7.1-alpine3.11
 
 MAINTAINER Michael Karlesky <michael@karlesky.net>
 
@@ -12,6 +12,12 @@ RUN apk --no-cache add \
 
 ##
 ## Copy assets for inclusion in image
+##
+## Notes:
+## - Gems must be downloaded manually to the vendored assets/gems directory.
+## - To find the list of gems and versions needed, visit
+##     https://rubygems.org/gems/ceedling/versions/0.30.0/dependencies
+## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` in assets/gems.
 ##
 
 COPY assets/gems /assets/gems
