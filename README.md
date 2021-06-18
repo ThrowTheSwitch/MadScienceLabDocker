@@ -1,9 +1,10 @@
 # Mad Science Lab C Unit Testing Docker Image
-Cross-compilation C unit testing environment with Unity, CMock, and Ceedling.
+C unit testing environment with Unity, CMock, and Ceedling. The purpose of this docker
+image is to create an easy-to-install portable system for running unit tests with Ceedling.
 
 ## Contents
 * Testing tools
-  * [Ceedling](http://www.throwtheswitch.org/ceedling) 0.30.0
+  * [Ceedling](http://www.throwtheswitch.org/ceedling) 0.31.0
   * [CMock](http://www.throwtheswitch.org/cmock) 2.5.2
   * [Unity](http://www.throwtheswitch.org/unity) 2.5.1
 * C support
@@ -19,3 +20,6 @@ Cross-compilation C unit testing environment with Unity, CMock, and Ceedling.
 ## Usage
 `docker run -it --rm -v <local project path>:/project throwtheswitch/madsciencelab[:tag]`
 
+## Basic Articles Discussing Unit Testing
+  * This docker image uses Ceedling to build "native" code as described [here](http://www.throwtheswitch.org/build/which)
+  * For additional help and tips for building native tests, read [this](http://www.throwtheswitch.org/build/native)

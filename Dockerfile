@@ -16,7 +16,7 @@ RUN apk --no-cache add \
 ## Notes:
 ## - Gems must be downloaded manually to the vendored assets/gems directory.
 ## - To find the list of gems and versions needed, visit
-##     https://rubygems.org/gems/ceedling/versions/0.30.0/dependencies
+##     https://rubygems.org/gems/ceedling/versions/0.31.0/dependencies
 ## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` in assets/gems.
 ##
 
