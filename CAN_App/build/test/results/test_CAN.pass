@@ -1,0 +1,22 @@
+---
+:source:
+  :path: test
+  :file: test_CAN.c
+:successes:
+- :test: test_GivenMessageReceived_ThenWritesToLog
+  :line: 16
+  :message: ''
+  :unity_test_time: 0
+- :test: test_GivenNoMessageReceived_ThenDoesNotWriteToLog
+  :line: 30
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 2
+  :passed: 2
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.99216639999986
