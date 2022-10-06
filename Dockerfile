@@ -8,7 +8,8 @@ RUN apk --no-cache add \
   gcc \
   gcovr \
   valgrind \
-  libc-dev
+  libc-dev \
+  gdb
 
 ##
 ## Copy assets for inclusion in image
