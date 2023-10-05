@@ -15,6 +15,7 @@ RUN set -ex                       \
   && apt -y upgrade               \
   && apt install -y               \
      gcc-arm-none-eabi            \
+     libnewlib-arm-none-eabi      \
      --no-install-recommends      \
   && rm -rf /var/lib/apt/lists/*
 
