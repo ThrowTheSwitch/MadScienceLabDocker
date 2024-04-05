@@ -16,10 +16,8 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
-     gcc-arm-none-eabi \
      gdb \
      libc-dev \
-     libnewlib-arm-none-eabi \
      nano \
      ruby=1:3.1 \
      zsh \
@@ -37,8 +35,6 @@ RUN set -ex \
 ## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
 ##
 COPY build/base/assets /assets/base 
-
-COPY build/arm64-cross/assets /assets/arm64-cross 
 
 
 # Install Ceedling, CMock, Unity, CException + gem dependencies
@@ -72,7 +68,7 @@ RUN set -ex \
   && cp /assets/base/shell/zshrc /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \ 
   # Copy welcome file & give new user permissions
-  && cp /assets/arm64-cross/shell/welcome /home/dev/.welcome \
+  && cp /assets/base/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \ 
   # Cleanup assets
   && rm -rf /assets

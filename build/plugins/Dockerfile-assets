@@ -1,0 +1,11 @@
+
+##
+## Copy Dotnet assets for temporary use
+##
+## Notes:
+## - The Microsoft Debian package sources file is needed to install Dotnet
+## - THe file should be downloaded and vendored to assets/
+##   wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+##
+
+COPY build/plugins/assets /assets/plugins

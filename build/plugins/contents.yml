@@ -1,0 +1,4 @@
+
+- Tools used by Ceedling’s built-in plugins (gcovr, valgrind, etc.)
+- Python 3 (because of gcovr)
+- Dotnet 8 (because of reportgenerator)

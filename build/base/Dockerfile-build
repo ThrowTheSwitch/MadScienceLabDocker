@@ -1,0 +1,8 @@
+
+# Install Ceedling, CMock, Unity, CException + gem dependencies
+RUN set -ex \
+  # Prevent documentation installation taking up space
+  echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
+  # Install Ceedling and related gems
+  && gem install --force --local /assets/base/gems/*.gem \
+  && rm .gemrc

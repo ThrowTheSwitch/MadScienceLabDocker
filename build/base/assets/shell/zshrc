@@ -14,3 +14,4 @@ CLICOLOR=1
 
 PROMPT="%F{blue}%n%f | %F{cyan}%~%f > "
 
+source $HOME/.welcome

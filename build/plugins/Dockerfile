@@ -16,12 +16,13 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
-     gcc-arm-none-eabi \
+     gcovr \
      gdb \
      libc-dev \
-     libnewlib-arm-none-eabi \
      nano \
+     ncurses-bin \
      ruby=1:3.1 \
+     valgrind \
      zsh \
      --no-install-recommends \
   && apt clean \
@@ -38,7 +39,15 @@ RUN set -ex \
 ##
 COPY build/base/assets /assets/base 
 
-COPY build/arm64-cross/assets /assets/arm64-cross 
+##
+## Copy Dotnet assets for temporary use
+##
+## Notes:
+## - The Microsoft Debian package sources file is needed to install Dotnet
+## - THe file should be downloaded and vendored to assets/
+##   wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+##
+COPY build/plugins/assets /assets/plugins 
 
 
 # Install Ceedling, CMock, Unity, CException + gem dependencies
@@ -48,6 +57,16 @@ RUN set -ex \
   # Install Ceedling and related gems
   && gem install --force --local /assets/base/gems/*.gem \
   && rm .gemrc 
+
+  # Microsoft Dotnet installation to support `reportgenerator` for `gcov` plugin
+  RUN set -ex \
+    && dpkg -i /assets/plugins/dotnet/packages-microsoft-prod.deb \
+    && apt update \
+    && apt install -y \
+       dotnet-sdk-8.0 \
+       --no-install-recommends \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* 
 
 
 ##
@@ -72,13 +91,20 @@ RUN set -ex \
   && cp /assets/base/shell/zshrc /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \ 
   # Copy welcome file & give new user permissions
-  && cp /assets/arm64-cross/shell/welcome /home/dev/.welcome \
+  && cp /assets/plugins/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \ 
   # Cleanup assets
   && rm -rf /assets
 
 # Become / set new user
 USER dev
+
+# Install `reportgenerator` (for `gcov` plugin)
+RUN set -ex \
+  # Install the dotnet tool as global (which means global for the current user vs. a local directory)
+  && dotnet tool install --global dotnet-reportgenerator-globaltool \
+  # Modify the PATH so the new tool is findable
+  && echo "[[ -d \"$HOME/.dotnet/tools\" ]] && export PATH=\"$PATH:$HOME/.dotnet/tools\"" >> $HOME/.zshenv 
 
 
 WORKDIR /home/dev/project

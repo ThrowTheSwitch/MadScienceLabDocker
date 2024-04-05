@@ -1,5 +1,6 @@
 # Mad Science Lab C Unit Testing Docker Image
-C unit testing environment with Unity, CMock, and Ceedling. The purpose of this docker
+
+C unit testing environment with Unity, CMock, and Ceedling. The purpose of this Docker
 image is to create an easy-to-install portable system for running unit tests with Ceedling.
 
 ## Contents

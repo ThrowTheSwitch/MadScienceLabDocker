@@ -1,0 +1,9 @@
+
+- build-essential    # Essential build support tools and packages
+- coreutils  
+- gcc                # GNU Compiler Collection
+- gdb                # Debugger (for Ceedling `backtrace` feature)
+- libc-dev           # Common C development packages
+- nano               # Simple, helpful text editor
+- ruby=1:3.1         # Ruby 3 in Debian packages
+- zsh                # Z shell

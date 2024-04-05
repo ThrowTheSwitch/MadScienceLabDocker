@@ -12,43 +12,24 @@ RUN set -ex \
   # Update package management environment
   && apt update \
   && apt -y upgrade \
+<%# INSERT SETUP BLOCKS -%>
+<% @setup.each {|block| %><%= block.concat("\n") %><% } -%>
   && apt install -y \
-     build-essential \
-     coreutils \
-     gcc \
-     gcc-arm-none-eabi \
-     gdb \
-     libc-dev \
-     libnewlib-arm-none-eabi \
-     nano \
-     ruby=1:3.1 \
-     zsh \
+<%# INSERT PACKAGE LIST TO INSTALL -%>
+<% @packages.each {|package|%><%= "     #{package} \\\n"%><% } -%>
      --no-install-recommends \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*
 
-##
-## Copy Ruby assets for inclusion in image
-##
-## Notes:
-## - Gems must be downloaded manually to the vendored bse/assets/gems directory.
-## - To find the list of gems and versions needed, visit
-##     https://rubygems.org/gems/ceedling/versions/<version>/dependencies
-## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
-##
-COPY build/base/assets /assets/base 
+<%# INSERT ASSET HANDLING BLOCKS -%>
+<% @assets.each {|block| -%>
+<%= block + " \n" %>
+<% } -%>
 
-COPY build/arm64-cross/assets /assets/arm64-cross 
-
-
-# Install Ceedling, CMock, Unity, CException + gem dependencies
-RUN set -ex \
-  # Prevent documentation installation taking up space
-  echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
-  # Install Ceedling and related gems
-  && gem install --force --local /assets/base/gems/*.gem \
-  && rm .gemrc 
-
+<%# INSERT BUILD / INSTALLATION BLOCKS -%>
+<% @build.each {|block| -%>
+<%= block + " \n" %>
+<% } -%>
 
 ##
 ## Permissions Security & Cleanup
@@ -72,7 +53,7 @@ RUN set -ex \
   && cp /assets/base/shell/zshrc /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \ 
   # Copy welcome file & give new user permissions
-  && cp /assets/arm64-cross/shell/welcome /home/dev/.welcome \
+  && cp /assets/<%= @variant -%>/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \ 
   # Cleanup assets
   && rm -rf /assets
@@ -80,6 +61,10 @@ RUN set -ex \
 # Become / set new user
 USER dev
 
+<%# INSERT USER-LEVEL BLOCKS -%>
+<% @user.each {|block| -%>
+<%= block + " \n" %>
+<% } -%>
 
 WORKDIR /home/dev/project
 

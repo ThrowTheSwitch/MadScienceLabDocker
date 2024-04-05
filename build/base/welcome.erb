@@ -1,0 +1,9 @@
+echo ""
+echo "🧪 \u001b[35mWelcome to the Mad Science Lab <%= @version -%> \u001b[0m"
+echo "\u001b[37m"
+echo "  This container includes:"
+<%# INSERT CONTENTS LIST -%>
+<% @contents.each {|line|%><%= "echo \"   • #{line}\"\n"%><% } -%>
+echo ""
+echo "  To get started, enter \`ceedling help\` at the command line."
+echo "\u001b[0m"

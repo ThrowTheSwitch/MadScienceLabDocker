@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+BIN = File.expand_path( File.dirname( __FILE__ ) )
+
+$LOAD_PATH.unshift( BIN )
+
+require 'cli'
+require 'cli_handler'
+require 'dockerfile_data'
+
+# Entry point
+begin
+
+  # Dependency injection
+  cli_handler = DockerGeneratorTasks::Handler.new( {
+      :dockerfile_data => DockerfileData.new()
+    }
+  )
+
+  FileGeneratorTasks::CLI.start( ARGV, {
+    :objects => 
+      {
+        :handler => cli_handler,
+      }
+    }
+  )
+
+# Boom handling
+rescue StandardError => e
+  $stderr.puts( "\n ERROR: #{e.message}" )
+  $stderr.puts( e.backtrace ) if ( defined?( PROJECT_DEBUG ) and PROJECT_DEBUG )
+  exit(1)
+end
