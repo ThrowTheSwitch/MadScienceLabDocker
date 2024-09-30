@@ -1,0 +1,4 @@
+
+- gcc                # GNU Compiler Collection
+- libc-dev           # Common C development packages
+- gdb                # Debugger (for Ceedling `backtrace` feature)

@@ -1,0 +1,9 @@
+echo ""
+echo "\u001b[35mWelcome to the Mad Science Lab $MADSCIENCELAB_TAGNUM \u001b[0m"
+echo "\u001b[37m"
+echo "  This container includes:"
+<%# INSERT CONTENTS LIST -%>
+<% @contents.each {|item|%><%= "if [[ \"$CONTAINER_PLATFORM\" == #{item['platform']} ]]; then echo \"   * #{item['entry']}\"; fi\n"%><% } -%>
+echo ""
+echo "  To get started, enter \`ceedling help\` at the command line."
+echo "\u001b[0m"

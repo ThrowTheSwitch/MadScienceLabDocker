@@ -1,7 +1,5 @@
 
-- Ceedling, Unity, CMock & CException
-- Ruby 3
-- The GNU Compiler Collection (gcc, etc.)
-- Essential command line and build utilities
-- The GNU Debugger (gdb)
-- Standard C libraries
+- {platform: '*', entry: 'Ceedling, Unity, CMock & CException'}
+- {platform: '*', entry: 'Ruby 3'}
+- {platform: '*', entry: 'Essential Unix utilities'}
+- {platform: '*', entry: 'nano for simple text editing'}

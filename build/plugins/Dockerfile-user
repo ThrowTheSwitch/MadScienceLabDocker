@@ -1,7 +1,8 @@
 
 # Install `reportgenerator` (for `gcov` plugin)
-RUN set -ex \
+# Only available in AMD64 containers
+RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
   # Install the dotnet tool as global (which means global for the current user vs. a local directory)
   && dotnet tool install --global dotnet-reportgenerator-globaltool \
   # Modify the PATH so the new tool is findable
-  && echo "[[ -d \"$HOME/.dotnet/tools\" ]] && export PATH=\"$PATH:$HOME/.dotnet/tools\"" >> $HOME/.zshenv
+  && echo "[[ -d \"$HOME/.dotnet/tools\" ]] && export PATH=\"$PATH:$HOME/.dotnet/tools\"" >> $HOME/.zshenv ; fi

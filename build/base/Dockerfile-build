@@ -5,4 +5,6 @@ RUN set -ex \
   echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
   # Install Ceedling and related gems
   && gem install --force --local /assets/base/gems/*.gem \
+  && gem install bundler \
+  && bundle install --gemfile=/assets/base/gems/Gemfile \
   && rm .gemrc

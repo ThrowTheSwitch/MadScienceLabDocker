@@ -2,7 +2,7 @@
 # Dockerfile template data class.
 class DockerfileData
 
-  attr_accessor :variant
+  attr_accessor :variant, :tagnum
 
   def initialize()
     @setup = []
@@ -11,7 +11,13 @@ class DockerfileData
     @build = []
     @user = []
 
+    @variant_dir = ''
     @variant = ''
+    @tagnum = ''
+  end
+
+  def variant_dir=(dir)
+    @variant_dir = dir.split( File::SEPARATOR ).drop(1).join( File::SEPARATOR )
   end
 
   def add_setup_block( block )

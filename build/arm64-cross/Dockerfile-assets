@@ -1,2 +1,0 @@
-
-COPY build/arm64-cross/assets /assets/arm64-cross

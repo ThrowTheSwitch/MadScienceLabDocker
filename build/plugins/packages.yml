@@ -2,5 +2,8 @@
 - gcovr        # For `gcov` plugin
 - valgrind     # For `valgrind` plugin
 - ncurses-bin  # For `tput` (`beep` plugin)
+- unzip        # For `dependencies` plugin
+- git-all      # For `git` (`dependencies` plugin)
+- subversion   # For `svn` (`dependencies` plugin)
 
 # Note: `reportgenerator` (for `gcov` plugin) is a Dotnet tool handled elsehwere

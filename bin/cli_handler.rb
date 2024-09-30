@@ -29,6 +29,8 @@ module DockerGeneratorTasks
         raise "Directory '#{dir}' not found" if !File.directory?( dir )
       end
 
+      @dockerfile_data.variant_dir = dirs[-1] # Last in ordered list
+      @dockerfile_data.tagnum = options[:version]
       @dockerfile_data.variant = options[:variant]
 
       # Process all components in batches across all directories
@@ -48,7 +50,7 @@ module DockerGeneratorTasks
         mode:'w'
       )
 
-      puts( "📦 Wrote Dockerfile to #{dest}" )
+      puts( "📄 Wrote Dockerfile to #{dest}" )
     end
 
 
@@ -59,17 +61,12 @@ module DockerGeneratorTasks
 
       dirs = options[:dir]
 
-      version = options[:version]
-      @version = ''
-      if !version.empty?
-        @version = "v#{version}" if !(version =~ /latest/i)
-      end
-
-      # Validate directories
+      # Validate sources base paths
       dirs.each do |dir|
         raise "Directory '#{dir}' not found" if !File.directory?( dir )
       end
 
+      # Instance variable for ERB binding
       @contents = []
 
       msg = 'welcome file contents'
