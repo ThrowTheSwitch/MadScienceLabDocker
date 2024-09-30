@@ -28,18 +28,20 @@ LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"
 
 # Docker image tag for internal container use
-ENV MADSCIENCELAB_TAGNUM=<%= @tagnum -%>
-
+ENV MADSCIENCELAB_TAGNUM=1.0.0-prelease
 # Image base / set up
 RUN set -ex \
   # Update package management environment
   && apt update \
   && apt -y upgrade \
-<%# INSERT SETUP BLOCKS -%>
-<% @setup.each {|block| %><%= block.concat("\n") %><% } -%>
   && apt install -y \
-<%# INSERT PACKAGE LIST TO INSTALL -%>
-<% @packages.each {|package|%><%= "     #{package} \\\n"%><% } -%>
+     coreutils \
+     gcc-arm-none-eabi \
+     libnewlib-arm-none-eabi \
+     locales \
+     nano \
+     ruby=1:3.1 \
+     zsh \
      --no-install-recommends \
   && apt autoremove \
   && apt clean \
@@ -64,19 +66,31 @@ RUN set -ex \
   # locale-gen generates locales for all uncommented locales in /etc/locale.gen
   && locale-gen
 
-<%# INSERT ASSET HANDLING BLOCKS -%>
-<% @assets.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
-<%# COPY GENERATED WELCOME FILE -%>
+##
+## Copy Ruby assets for inclusion in image
+##
+## Notes:
+## - Gems must be downloaded manually to the vendored bse/assets/gems directory.
+## - To find the list of gems and versions needed, visit
+##     https://rubygems.org/gems/ceedling/versions/<version>/dependencies
+## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
+##
+COPY build/base/assets /assets/base 
+
 # Copy generated shell welcome file into image
-COPY build/<%= @variant_dir -%>/assets/shell/welcome /assets/<%= @variant_dir -%>/shell/welcome
+COPY build/arm-none-eabi/assets/shell/welcome /assets/arm-none-eabi/shell/welcome
 
 
-<%# INSERT BUILD / INSTALLATION BLOCKS -%>
-<% @build.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
+# Install Ceedling, CMock, Unity, CException + gem dependencies
+RUN set -ex \
+  # Prevent documentation installation taking up space
+  echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
+  # Install Ceedling and related gems
+  && gem install --force --local /assets/base/gems/*.gem \
+  && gem install bundler \
+  && bundle install --gemfile=/assets/base/gems/Gemfile \
+  && rm .gemrc 
+
 
 ##
 ## Permissions Security & Cleanup
@@ -100,7 +114,7 @@ RUN set -ex \
   && cp /assets/base/shell/zshrc /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \
   # Copy welcome file & give new user permissions
-  && cp /assets/<%= @variant_dir -%>/shell/welcome /home/dev/.welcome \
+  && cp /assets/arm-none-eabi/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \
   # Cleanup assets
   && rm -rf /assets
@@ -108,10 +122,6 @@ RUN set -ex \
 # Become / set new user
 USER dev
 
-<%# INSERT USER-LEVEL BLOCKS -%>
-<% @user.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
 
 WORKDIR /home/dev/project
 

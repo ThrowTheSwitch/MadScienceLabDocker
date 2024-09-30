@@ -28,18 +28,26 @@ LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"
 
 # Docker image tag for internal container use
-ENV MADSCIENCELAB_TAGNUM=<%= @tagnum -%>
-
+ENV MADSCIENCELAB_TAGNUM=1.0.0-prelease
 # Image base / set up
 RUN set -ex \
   # Update package management environment
   && apt update \
   && apt -y upgrade \
-<%# INSERT SETUP BLOCKS -%>
-<% @setup.each {|block| %><%= block.concat("\n") %><% } -%>
   && apt install -y \
-<%# INSERT PACKAGE LIST TO INSTALL -%>
-<% @packages.each {|package|%><%= "     #{package} \\\n"%><% } -%>
+     coreutils \
+     gcc-arm-none-eabi \
+     gcovr \
+     git-all \
+     libnewlib-arm-none-eabi \
+     locales \
+     nano \
+     ncurses-bin \
+     ruby=1:3.1 \
+     subversion \
+     unzip \
+     valgrind \
+     zsh \
      --no-install-recommends \
   && apt autoremove \
   && apt clean \
@@ -64,19 +72,52 @@ RUN set -ex \
   # locale-gen generates locales for all uncommented locales in /etc/locale.gen
   && locale-gen
 
-<%# INSERT ASSET HANDLING BLOCKS -%>
-<% @assets.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
-<%# COPY GENERATED WELCOME FILE -%>
+##
+## Copy Ruby assets for inclusion in image
+##
+## Notes:
+## - Gems must be downloaded manually to the vendored bse/assets/gems directory.
+## - To find the list of gems and versions needed, visit
+##     https://rubygems.org/gems/ceedling/versions/<version>/dependencies
+## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
+##
+COPY build/base/assets /assets/base 
+
+##
+## Copy Dotnet assets for temporary use
+##
+## Notes:
+## - The Microsoft Debian package sources file is needed to install Dotnet
+## - The file should be downloaded and vendored to assets/
+##   wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+##
+COPY build/plugins/assets /assets/plugins 
+
 # Copy generated shell welcome file into image
-COPY build/<%= @variant_dir -%>/assets/shell/welcome /assets/<%= @variant_dir -%>/shell/welcome
+COPY build/arm-none-eabi-plugins/assets/shell/welcome /assets/arm-none-eabi-plugins/shell/welcome
 
 
-<%# INSERT BUILD / INSTALLATION BLOCKS -%>
-<% @build.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
+# Install Ceedling, CMock, Unity, CException + gem dependencies
+RUN set -ex \
+  # Prevent documentation installation taking up space
+  echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
+  # Install Ceedling and related gems
+  && gem install --force --local /assets/base/gems/*.gem \
+  && gem install bundler \
+  && bundle install --gemfile=/assets/base/gems/Gemfile \
+  && rm .gemrc 
+
+# Microsoft Dotnet installation to support `reportgenerator` for `gcov` plugin
+# Only available on AMD64 image builds
+RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
+   && dpkg -i /assets/plugins/dotnet/packages-microsoft-prod.deb \
+   && apt update \
+   && apt install -y \
+      dotnet-sdk-8.0 \
+      --no-install-recommends \
+   && apt clean \
+   && rm -rf /var/lib/apt/lists/* ; fi 
+
 
 ##
 ## Permissions Security & Cleanup
@@ -100,7 +141,7 @@ RUN set -ex \
   && cp /assets/base/shell/zshrc /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \
   # Copy welcome file & give new user permissions
-  && cp /assets/<%= @variant_dir -%>/shell/welcome /home/dev/.welcome \
+  && cp /assets/arm-none-eabi-plugins/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \
   # Cleanup assets
   && rm -rf /assets
@@ -108,10 +149,14 @@ RUN set -ex \
 # Become / set new user
 USER dev
 
-<%# INSERT USER-LEVEL BLOCKS -%>
-<% @user.each {|block| -%>
-<%= block + " \n" %>
-<% } -%>
+# Install `reportgenerator` (for `gcov` plugin)
+# Only available in AMD64 containers
+RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
+  # Install the dotnet tool as global (which means global for the current user vs. a local directory)
+  && dotnet tool install --global dotnet-reportgenerator-globaltool \
+  # Modify the PATH so the new tool is findable
+  && echo "[[ -d \"$HOME/.dotnet/tools\" ]] && export PATH=\"$PATH:$HOME/.dotnet/tools\"" >> $HOME/.zshenv ; fi 
+
 
 WORKDIR /home/dev/project
 

@@ -50,13 +50,13 @@ TAGNUM=""
 # Docker image tag (defaults to "latest" without version number)
 TAG="latest"
 
-# Defaults if no --dir provided
+# Variant handling
 VARIANT_NAME_OVERRIDE=false
 VARIANT_NAME_RENAME=""
 VARIANT_NAME=""
 VARIANT_DIR_PATH=""
 
-# First (could be only) element in list of directories to process
+# First, necessary base directory in list of directories to process
 DOCKERFILE_GEN_DIRS="--dir=build/base"
 
 # Docker buildx platforms list (empty defaults to host platform where build is happening)
@@ -64,10 +64,11 @@ PLATFORMS=""
 # Docker buildx command line argument
 PLATFORM_ARGS=""
 
-# Default to no special build action
-BUILD_ACTION=""
+# Default to standard, simple `docker build`
+BUILD_ACTION="build"
 
-# Build action flags
+# Special build action flags
+MULTIPLATFORM_BUILD=false
 PUSH=false
 VALIDATE=false
 
@@ -202,22 +203,24 @@ if [ -z "$PLATFORMS" ]; then
     usage
   fi
 
-# If platforms not blank, ensure --push or --validate used properly and set BUILD_ACTION accordingly
+# If platforms not blank, ensure --push or --validate used properly and add to BUILD_ACTION accordingly
 else
   if [ "$PUSH" = true && "$VALIDATE" = true ]; then
     echo ""
     echo "ERROR: --validate and --push are mutually exclusive options"
     usage
   fi
-
-  if [ "$PUSH" = true ]; then
-    BUILD_ACTION="--push"
-  fi
-
-  if [ "$VALIDATE" = true ]; then
-    BUILD_ACTION="-o type=image"
-  fi
 fi
+
+# After build option combination validation above, set our build options
+if [ "$PUSH" = true ]; then
+  BUILD_ACTION="buildx build --push"
+  MULTIPLATFORM_BUILD=true
+elif [ "$VALIDATE" = true ]; then
+  BUILD_ACTION="buildx build -o type=image"
+  MULTIPLATFORM_BUILD=true
+fi
+
 
 # Print script statements to STDOUT if --verbose set
 if [ "$VERBOSE" = true ]; then
@@ -242,6 +245,10 @@ fi
 ##
 ## File Generation
 ##
+
+
+echo "🎯 Target Docker image $IMAGE:$TAG"
+echo ""
 
 # Generate the Welcome file displayed within the shell at container launch
 bin/filegen welcome $DOCKERFILE_GEN_DIRS build/base/templates/welcome.erb "$VARIANT_DIR_PATH"/assets/shell/welcome
@@ -269,37 +276,44 @@ echo ""
 
 # Build the Dockerfile we just created with any additional options
 if [ "$BUILD" = true ]; then
-  # If a buildx builder doesn't already exist, set one up
-  if ! (docker buildx ls 2>&1 | grep -q 'madsciencelab-builder'); then
-    docker buildx create --name madsciencelab-builder
+
+  # If a multi-platform build option is set, enable multi-platform builder
+  if [ $MULTIPLATFORM_BUILD == true ]; then
+    # If a buildx builder doesn't already exist, set one up
+    if ! (docker buildx ls 2>&1 | grep -q 'madsciencelab-builder'); then
+      docker buildx create --name madsciencelab-builder
+      if [ $? -ne 0 ]; then
+        echo "❌ ERROR: Could not create multi-platform Docker builder"
+        echo ""
+        exit 1
+      fi
+    fi
+
+    # Ensure we're using a buildx builder
+    docker buildx use madsciencelab-builder
     if [ $? -ne 0 ]; then
-      echo "❌ ERROR: Could not create multi-platform Docker builder"
+      echo "❌ ERROR: Could not enable multi-platform Docker builder"
       echo ""
       exit 1
     fi
   fi
-
-  # Ensure we're using a buildx builder
-  docker buildx use madsciencelab-builder
-  if [ $? -ne 0 ]; then
-    echo "❌ ERROR: Could not enable multi-platform Docker builder"
-    echo ""
-    exit 1
-  fi
   
   # Perform multi-platform build with output as an image or optionally a direct push to the repository
   # Always echo this command to the command line
-  (set -x; docker buildx build $LOG_ARGS -t "$IMAGE":"$TAG" $PLATFORM_ARGS $BUILD_ACTION -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
+  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$TAG" $PLATFORM_ARGS -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
 
   # Capture exit code from attempted Docker image build
   success=$?
 
-  docker buildx stop madsciencelab-builder
+  # Stop the buildx builder started above
+  if [ $MULTIPLATFORM_BUILD == true ]; then
+    docker buildx stop madsciencelab-builder
+  fi
 
   operation=""
   platforms=""
 
-  if [ "$BUILD_ACTION" == "--push" ]; then
+  if [ $PUSH == true ]; then
     operation="Built and pushed"
   else
     operation="Built"

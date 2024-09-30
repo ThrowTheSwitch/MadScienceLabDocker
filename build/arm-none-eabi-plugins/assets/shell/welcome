@@ -8,6 +8,12 @@ if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Essential Unix utilities"; 
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * nano for simple text editing"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * GNU Compiler Collection (gcc, etc.) for ARM"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Standard C libraries (ARM)"; fi
+if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * gcovr for use by GCov plugin"; fi
+if [[ "$CONTAINER_PLATFORM" == linux/amd64 ]]; then echo "   * reportgenerator for use by GCov plugin"; fi
+if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * unzip, git & svn for use by Dependencies plugin"; fi
+if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * tput for use by Beep plugin"; fi
+if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Python 3, needed by gcovr"; fi
+if [[ "$CONTAINER_PLATFORM" == linux/amd64 ]]; then echo "   * Dotnet 8, needed by reportgenerator"; fi
 echo ""
 echo "  To get started, enter \`ceedling help\` at the command line."
 echo "\u001b[0m"

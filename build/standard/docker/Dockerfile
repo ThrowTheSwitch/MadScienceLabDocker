@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"
 
 # Docker image tag for internal container use
-ENV MADSCIENCELAB_TAGNUM=
+ENV MADSCIENCELAB_TAGNUM=1.0.0-prelease
 # Image base / set up
 RUN set -ex \
   # Update package management environment
@@ -77,7 +77,10 @@ RUN set -ex \
 ## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
 ##
 COPY build/base/assets /assets/base 
+
+# Copy generated shell welcome file into image
 COPY build/standard/assets/shell/welcome /assets/standard/shell/welcome
+
 
 # Install Ceedling, CMock, Unity, CException + gem dependencies
 RUN set -ex \
