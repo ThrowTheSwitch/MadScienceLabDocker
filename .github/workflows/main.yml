@@ -1,4 +1,4 @@
-name: Docker image build
+name: Docker images build
 
 on:
   workflow_dispatch:
@@ -49,36 +49,36 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.IMAGE_BASE_NAME }}:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}:latest
 
-      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}'
+      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}'
         env: 
           VARIANT: plugins
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/$VARIANT/docker/Dockerfile
+          file: build/${{ env.VARIANT }}/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-$VARIANT:latest
+          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
 
-      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}'
+      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}'
         env:
           VARIANT: arm-none-eabi
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/$VARIANT/docker/Dockerfile
+          file: build/${{ env.VARIANT }}/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-$VARIANT:latest
+          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
 
-      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}'
+      - name: 'Build and push Docker image ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}'
         env:
           VARIANT: arm-none-eabi-plugins
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/$VARIANT/docker/Dockerfile
+          file: build/${{ env.VARIANT }}/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-$VARIANT:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-$VARIANT:latest
+          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:${{ github.ref_name }}, ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
 
