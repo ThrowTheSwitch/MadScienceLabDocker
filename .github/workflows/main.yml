@@ -45,7 +45,7 @@ jobs:
           file: build/standard/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: throwtheswitch/madsciencelab:${{ github.ref_name }}, throwtheswitch/madsciencelab:latest
+          tags: mkarlesky/madsciencelab:${{ github.ref_name }}, mkarlesky/madsciencelab:latest
 
       - name: 'Build and push Docker image throwtheswitch/madsciencelab-plugins:${{ github.ref_name }}'
         uses: docker/build-push-action@v6
@@ -54,7 +54,7 @@ jobs:
           file: build/plugins/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: throwtheswitch/madsciencelab-plugins:${{ github.ref_name }}, throwtheswitch/madsciencelab-plugins:latest
+          tags: mkarlesky/madsciencelab-plugins:${{ github.ref_name }}, mkarlesky/madsciencelab-plugins:latest
 
       - name: 'Build and push Docker image throwtheswitch/madsciencelab-arm-none-eabi:${{ github.ref_name }}'
         uses: docker/build-push-action@v6
@@ -63,7 +63,7 @@ jobs:
           file: build/arm-none-eabi/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: throwtheswitch/madsciencelab-arm-none-eabi:${{ github.ref_name }}, throwtheswitch/madsciencelab-arm-none-eabi:latest
+          tags: mkarlesky/madsciencelab-arm-none-eabi:${{ github.ref_name }}, mkarlesky/madsciencelab-arm-none-eabi:latest
 
       - name: 'Build and push Docker image throwtheswitch/madsciencelab-arm-none-eabi-plugins:${{ github.ref_name }}'
         uses: docker/build-push-action@v6
@@ -72,5 +72,5 @@ jobs:
           file: build/arm-none-eabi-plugins/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: throwtheswitch/madsciencelab-arm-none-eabi-plugins:${{ github.ref_name }}, throwtheswitch/madsciencelab-arm-none-eabi-plugins:latest
+          tags: mkarlesky/madsciencelab-arm-none-eabi-plugins:${{ github.ref_name }}, mkarlesky/madsciencelab-arm-none-eabi-plugins:latest
 
