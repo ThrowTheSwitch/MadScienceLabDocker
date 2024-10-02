@@ -2,7 +2,7 @@
 # Dockerfile template data class.
 class DockerfileData
 
-  attr_accessor :variant, :tagnum
+  attr_accessor :variant
 
   def initialize()
     @setup = []
@@ -13,7 +13,6 @@ class DockerfileData
 
     @variant_dir = ''
     @variant = ''
-    @tagnum = ''
   end
 
   def variant_dir=(dir)

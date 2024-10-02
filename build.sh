@@ -24,7 +24,7 @@ function usage {
   echo ""
   echo "Docker image build options:"
   echo "  -b, --build     Build Docker image after generating a Dockerfile [defaults to local image on host]"
-  echo "  -v, --version   Docker image revision number, ex: '1.2.3' [default: 'latest']"
+  echo "  -v, --version   Docker image version, ex: '1.2.3' [default: 'latest']"
   echo "  -i, --image     Override image name [default: '$IMAGE']"
   echo "      --platform  Docker target platforms, ex: 'linux/arm64,linux/amd64'"
   echo "      --push      Push a multi-platform Docker image build to its repository (only with --platform)"
@@ -44,11 +44,9 @@ if [ $# -eq 0 ]; then usage; fi
 ## Defaults
 ##
 
-# Version number for Docker image
-TAGNUM=""
-
-# Docker image tag (defaults to "latest" without version number)
-TAG="latest"
+# Docker image tag / version handling
+IMAGE_TAG="latest"   # Docker image tag (can include 'latest')
+CONTAINER_VERSION="" # Version provided to running container via environment variable (blank or a version string)
 
 # Variant handling
 VARIANT_NAME_OVERRIDE=false
@@ -124,7 +122,7 @@ while [[ $# -gt 0 ]]; do
         usage
       fi
 
-      TAGNUM="$2"
+      CONTAINER_VERSION="$2"
       shift
       shift
       ;;
@@ -237,9 +235,9 @@ if [ -n "$VARIANT_NAME" ]; then
   IMAGE="$IMAGE-$VARIANT_NAME"
 fi
 
-# Create Docker image tag other than 'latest', if version number provided
-if [ -n "$TAGNUM" ]; then
-  TAG="$TAGNUM"
+# Create Docker image tag other than 'latest', if version string provided
+if [ -n "$CONTAINER_VERSION" ]; then
+  IMAGE_TAG="$CONTAINER_VERSION"
 fi
 
 ##
@@ -247,7 +245,7 @@ fi
 ##
 
 
-echo "🎯 Target Docker image $IMAGE:$TAG"
+echo "🎯 Target Docker image $IMAGE:$IMAGE_TAG"
 echo ""
 
 # Generate the Welcome file displayed within the shell at container launch
@@ -261,7 +259,7 @@ fi
 echo ""
 
 # Generate the Dockerfile
-bin/filegen dockerfile $DOCKERFILE_GEN_DIRS --version="$TAGNUM" --variant="$VARIANT_NAME" build/base/templates/Dockerfile.erb "$VARIANT_DIR_PATH"/docker/Dockerfile
+bin/filegen dockerfile $DOCKERFILE_GEN_DIRS --variant="$VARIANT_NAME" build/base/templates/Dockerfile.erb "$VARIANT_DIR_PATH"/docker/Dockerfile
 if [ $? -ne 0 ]; then
   echo "❌ ERROR: Could not generate Dockerfile"
   echo ""
@@ -300,7 +298,7 @@ if [ "$BUILD" = true ]; then
   
   # Perform multi-platform build with output as an image or optionally a direct push to the repository
   # Always echo this command to the command line
-  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$TAG" $PLATFORM_ARGS -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
+  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$IMAGE_TAG" $PLATFORM_ARGS --build-arg CONTAINER_VERSION="$CONTAINER_VERSION" -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
 
   # Capture exit code from attempted Docker image build
   success=$?
@@ -328,11 +326,11 @@ if [ "$BUILD" = true ]; then
 
   if [ $success -eq 0 ]; then
     echo ""
-    echo "📦 $operation $IMAGE:$TAG for $platforms"
+    echo "📦 $operation $IMAGE:$IMAGE_TAG for $platforms"
     echo ""
   else
     echo ""
-    echo "❌ ERROR: Could not build $IMAGE:$TAG for $platforms"
+    echo "❌ ERROR: Could not build $IMAGE:$IMAGE_TAG for $platforms"
     echo ""    
   fi
 fi

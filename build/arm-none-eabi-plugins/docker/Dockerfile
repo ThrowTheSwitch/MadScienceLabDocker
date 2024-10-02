@@ -12,8 +12,15 @@ FROM bitnami/minideb:bookworm
 # recognized platform string (e.g. "linux/amd64").
 ARG TARGETPLATFORM
 
+# This build argument allows setting the image tag at build time to support CI-based builds
+# The command line must include `--build-arg CONTAINER_VERSION=<version>`
+ARG CONTAINER_VERSION
+
 # Capture TARGETPLATFORM as an environment variable in the image
 ENV CONTAINER_PLATFORM=$TARGETPLATFORM
+
+# Docker image tag for internal container use, set via Docker build argument
+ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 
 ##
 ## Docker Image Best Practices
@@ -27,8 +34,6 @@ LABEL org.opencontainers.image.base.name=docker.io/bitnami/minideb
 LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"
 
-# Docker image tag for internal container use
-ENV MADSCIENCELAB_TAGNUM=1.0.0-prelease
 # Image base / set up
 RUN set -ex \
   # Update package management environment

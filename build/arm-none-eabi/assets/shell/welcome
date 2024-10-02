@@ -1,5 +1,5 @@
 echo ""
-echo "\u001b[35mWelcome to the Mad Science Lab $MADSCIENCELAB_TAGNUM \u001b[0m"
+echo "\u001b[35mWelcome to the Mad Science Lab $MADSCIENCELAB_VERSION \u001b[0m"
 echo "\u001b[37m"
 echo "  This container includes:"
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Ceedling, Unity, CMock & CException"; fi

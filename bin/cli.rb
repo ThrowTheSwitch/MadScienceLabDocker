@@ -38,7 +38,6 @@ module FileGeneratorTasks
 
     desc "dockerfile TEMPLATE DOCKERFILE_PATH", "Create a new Dockerfile from components"
     method_option :dir, :type => :string, :repeatable => true, :required => true, :desc => "Directory to inspect"
-    method_option :version, :type => :string, :required => true, :desc => "Version string (Docker image tag)"
     method_option :variant, :type => :string, :required => false, :default => "", :desc => "Docker image variant"
     method_option :debug, :type => :boolean, :default => false, :desc => "Set debug logging"
     long_desc <<-LONGDESC
@@ -57,8 +56,6 @@ module FileGeneratorTasks
     • `--dir` lists directories to inspect (1 or more flags required).
 
     • `--variant` provides the Docker image variant name.
-
-    • `--version` provides version (Docker image tag).
 
     • `--debug` optionally enables debug output (primarily stack traces).
     LONGDESC
