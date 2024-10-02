@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: {context}/build/standard/docker/Dockerfile
+          file: build/standard/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: throwtheswitch/madsciencelab:${{ github.ref_name }}, throwtheswitch/madsciencelab:latest
@@ -53,7 +53,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: {context}/build/plugins/docker/Dockerfile
+          file: build/plugins/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: throwtheswitch/madsciencelab-plugins:${{ github.ref_name }}, throwtheswitch/madsciencelab-plugins:latest
@@ -63,7 +63,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: {context}/build/arm-none-eabi/docker/Dockerfile
+          file: build/arm-none-eabi/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: throwtheswitch/madsciencelab-arm-none-eabi:${{ github.ref_name }}, throwtheswitch/madsciencelab-arm-none-eabi:latest
@@ -73,7 +73,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: {context}/build/arm-none-eabi-plugins/docker/Dockerfile
+          file: build/arm-none-eabi-plugins/docker/Dockerfile
           build-args: CONTAINER_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: throwtheswitch/madsciencelab-arm-none-eabi-plugins:${{ github.ref_name }}, throwtheswitch/madsciencelab-arm-none-eabi-plugins:latest
