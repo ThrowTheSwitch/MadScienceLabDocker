@@ -1,0 +1,19 @@
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=1000
+SAVEHIST=1000
+# End of lines configured by zsh-newuser-install
+# The following lines were added by compinstall
+zstyle :compinstall filename '/home/nonroot/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+
+CLICOLOR=1
+
+# Working directory only (displaying `dev` user is sorta confusing and unnecessary)
+PROMPT="%F{cyan}%~%f > "
+
+# Display contents of container as colored text list when shell first loads
+source $HOME/.welcome
