@@ -13,6 +13,7 @@ FROM bitnami/minideb:bookworm
 ARG TARGETPLATFORM
 
 # This build argument allows setting the image tag at build time to support CI-based builds
+# The command line must include `--build-arg CONTAINER_VERSION=<version>`
 ARG CONTAINER_VERSION
 
 # Capture TARGETPLATFORM as an environment variable in the image
@@ -116,11 +117,13 @@ RUN set -ex \
   && chown dev:nonroot /home/dev \
   && chmod -R ug+rwx /home/dev \
   # Copy simple Z shell config file & give new user permissions
-  && cp /assets/base/shell/zshrc /home/dev/.zshrc \
+  && cp /assets/base/shell/zshrc-dev /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \
   # Copy welcome file & give new user permissions
   && cp /assets/standard/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \
+  # Copy simple Z shell config file for root user (for running container as `-u root`)
+  && cp /assets/base/shell/zshrc-root /root/.zshrc \
   # Cleanup assets
   && rm -rf /assets
 

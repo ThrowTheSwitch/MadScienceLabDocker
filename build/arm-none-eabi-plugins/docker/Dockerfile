@@ -143,11 +143,13 @@ RUN set -ex \
   && chown dev:nonroot /home/dev \
   && chmod -R ug+rwx /home/dev \
   # Copy simple Z shell config file & give new user permissions
-  && cp /assets/base/shell/zshrc /home/dev/.zshrc \
+  && cp /assets/base/shell/zshrc-dev /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \
   # Copy welcome file & give new user permissions
   && cp /assets/arm-none-eabi-plugins/shell/welcome /home/dev/.welcome \
   && chown dev:nonroot /home/dev/.welcome \
+  # Copy simple Z shell config file for root user (for running container as `-u root`)
+  && cp /assets/base/shell/zshrc-root /root/.zshrc \
   # Cleanup assets
   && rm -rf /assets
 
