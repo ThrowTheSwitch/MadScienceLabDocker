@@ -40,6 +40,7 @@ RUN set -ex \
   && apt update \
   && apt -y upgrade \
   && apt install -y \
+     build-essential \
      coreutils \
      gcc \
      gdb \

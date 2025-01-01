@@ -2,4 +2,5 @@
 - {platform: '*', entry: 'Ceedling, Unity, CMock & CException'}
 - {platform: '*', entry: 'Ruby 3'}
 - {platform: '*', entry: 'Essential Unix utilities'}
+- {platform: '*', entry: 'Essential build tools (make, etc.)'}
 - {platform: '*', entry: 'nano for simple text editing'}
