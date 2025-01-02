@@ -1,0 +1,3 @@
+
+- {platform: '*', entry: 'GNU Compiler Collection (gcc, etc.) for ARM'}
+- {platform: '*', entry: 'Standard C libraries (ARM)'}

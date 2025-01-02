@@ -1,0 +1,12 @@
+
+##
+## Copy Ruby assets for inclusion in image
+##
+## Notes:
+## - Gems must be downloaded manually to the vendored bse/assets/gems directory.
+## - To find the list of gems and versions needed, visit
+##     https://rubygems.org/gems/ceedling/versions/<version>/dependencies
+## - The easiest way to vendor a gem is `gem fetch <name> -v <version>` with volume mapped to assets/gems.
+##
+
+COPY build/base/assets /assets/base

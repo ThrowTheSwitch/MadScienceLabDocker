@@ -1,0 +1,7 @@
+
+- {platform: '*',           entry: 'gcovr for use by GCov plugin'}
+- {platform: 'linux/amd64', entry: 'reportgenerator for use by GCov plugin'}
+- {platform: '*',           entry: 'unzip, git & svn for use by Dependencies plugin'}
+- {platform: '*',           entry: 'tput for use by Beep plugin'}
+- {platform: '*',           entry: 'Python 3, needed by gcovr'}
+- {platform: 'linux/amd64', entry: 'Dotnet 8, needed by reportgenerator'}
