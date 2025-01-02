@@ -3,7 +3,7 @@
 C unit testing environment with Unity, CMock, and Ceedling. The purpose of this Docker
 image is to create an easy-to-install portable system for running unit tests with Ceedling.
 
-## Contents
+<!-- ## Contents
 * Testing tools
   * [Ceedling](http://www.throwtheswitch.org/ceedling) 0.31.0
   * [CMock](http://www.throwtheswitch.org/cmock) 2.5.2
@@ -17,7 +17,7 @@ image is to create an easy-to-install portable system for running unit tests wit
   * gcov 9.2.0
   * valgrind 3.15.0
   * Ruby 2.7.1
-
+ -->
 ## Usage
 
 ### Generating Dockerfiles
