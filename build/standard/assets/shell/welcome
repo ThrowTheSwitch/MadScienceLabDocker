@@ -9,6 +9,7 @@ if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Essential build tools (make
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * nano for simple text editing"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * The GNU Compiler Collection (gcc, etc.)"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Standard C libraries"; fi
+if [[ "$CONTAINER_PLATFORM" == linux/amd64 ]]; then echo "   * Multilib C libraries"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * The GNU Debugger (gdb) for Ceedling's backtrace feature"; fi
 echo ""
 echo "  To get started, enter \`ceedling help\` at the command line."

@@ -43,6 +43,7 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
+     gcc-multilib \
      gcovr \
      gdb \
      git-all \

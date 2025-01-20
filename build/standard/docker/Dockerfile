@@ -43,6 +43,7 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
+     gcc-multilib \
      gdb \
      libc-dev \
      locales \

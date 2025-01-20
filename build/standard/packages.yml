@@ -1,4 +1,5 @@
 
 - gcc                # GNU Compiler Collection
+- gcc-multilib       # GNU Compilier multilib libraries to support gcc build with '-m32' flag.
 - libc-dev           # Common C development packages
 - gdb                # Debugger (for Ceedling `backtrace` feature)
