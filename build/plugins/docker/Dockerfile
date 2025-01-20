@@ -116,7 +116,7 @@ RUN set -ex \
 
 # Microsoft Dotnet installation to support `reportgenerator` for `gcov` plugin
 # Only available on AMD64 image builds
-RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
    && dpkg -i /assets/plugins/dotnet/packages-microsoft-prod.deb \
    && apt update \
    && apt install -y \
@@ -160,7 +160,7 @@ USER dev
 
 # Install `reportgenerator` (for `gcov` plugin)
 # Only available in AMD64 containers
-RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
   # Install the dotnet tool as global (which means global for the current user vs. a local directory)
   && dotnet tool install --global dotnet-reportgenerator-globaltool \
   # Modify the PATH so the new tool is findable
