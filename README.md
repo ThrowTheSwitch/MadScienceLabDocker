@@ -22,13 +22,13 @@ image is to create an easy-to-install portable system for running unit tests wit
 
 ### Generating Dockerfiles
 
-`./build.sh --dir build/standard --variant "" --version 1.0.0-prerelease`
+`./build.sh --dir build/standard --variant "" --version 1.0.0`
 
-`./build.sh --dir build/standard --dir build/plugins --version 1.0.0-prerelease`
+`./build.sh --dir build/standard --dir build/plugins --version 1.0.0`
 
-`./build.sh --dir build/arm-none-eabi --version 1.0.0-prerelease`
+`./build.sh --dir build/arm-none-eabi --version 1.0.0`
 
-`./build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version 1.0.0-prerelease`
+`./build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version 1.0.0`
 
 
 ## Basic Articles Discussing Unit Testing

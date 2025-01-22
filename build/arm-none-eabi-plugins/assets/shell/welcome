@@ -1,6 +1,6 @@
 echo ""
-echo "\u001b[35mWelcome to the Mad Science Lab $MADSCIENCELAB_VERSION \u001b[0m"
-echo "\u001b[37m"
+echo "\e[35mWelcome to the Mad Science Lab $MADSCIENCELAB_VERSION \e[0m"
+echo "\e[37m"
 echo "  This container includes:"
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Ceedling, Unity, CMock & CException"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Ruby 3"; fi
@@ -15,6 +15,9 @@ if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * unzip, git & svn for use by
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * tput for use by Beep plugin"; fi
 if [[ "$CONTAINER_PLATFORM" == * ]]; then echo "   * Python 3, needed by gcovr"; fi
 if [[ "$CONTAINER_PLATFORM" == linux/amd64 ]]; then echo "   * Dotnet 8, needed by reportgenerator"; fi
-echo ""
-echo "  To get started, enter \`ceedling help\` at the command line."
-echo "\u001b[0m"
+echo "\e[0m"
+echo "  NOTICE: Container user \`$(whoami)\` lacks root priveleges as a security best practice."
+echo "  This limits installing software and more. See Docker Hub page for container security docs and options."
+echo "\e[33m"
+echo "  To get started, enter \`ceedling help\` at the command line..."
+echo "\e[0m"

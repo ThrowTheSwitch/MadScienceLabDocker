@@ -10,7 +10,8 @@ on:
       - 'main'
 
 env:
-  IMAGE_BASE_NAME: 'throwtheswitch/madsciencelab'
+  IMAGE_ORG: 'throwtheswitch'
+  IMAGE_BASE_NAME: 'madsciencelab'
 
 
 jobs:
@@ -24,6 +25,10 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+    env:
+      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}"
+      # Cannot reference IMAGE_NAME as it does not exist yet
+      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -49,8 +54,10 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           file: build/standard/docker/Dockerfile
-          build-args: CONTAINER_VERSION=${{ github.ref_name }}
-          tags: ${{ env.IMAGE_BASE_NAME }}:latest
+          build-args: |
+            CONTAINER_VERSION=${{ github.ref_name }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}            
+          tags: ${{ env.IMAGE_URL }}:latest
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
@@ -59,8 +66,12 @@ jobs:
       packages: write
       attestations: write
       id-token: write
-    env: 
-      VARIANT: plugins
+    env:
+      VARIANT: 'plugins'
+      # Cannot reference VARIANT as it does not exist yet
+      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-plugins"
+      # Cannot reference IMAGE_NAME as it does not exist yet
+      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -80,13 +91,15 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Docker image: madsciencelab-plugins
-      - name: 'Build Docker image ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}'
+      - name: 'Build Docker image ${{ env.IMAGE_NAME }}'
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           file: build/${{ env.VARIANT }}/docker/Dockerfile
-          build-args: CONTAINER_VERSION=${{ github.ref_name }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
+          build-args: |
+            CONTAINER_VERSION=${{ github.ref_name }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_URL }}:latest
 
   madsciencelab-arm-none-eabi:
     runs-on: ubuntu-latest
@@ -96,7 +109,11 @@ jobs:
       attestations: write
       id-token: write
     env:
-      VARIANT: arm-none-eabi
+      VARIANT: 'arm-none-eabi'
+      # Cannot reference VARIANT as it does not exist yet
+      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-arm-none-eabi"
+      # Cannot reference IMAGE_NAME as it does not exist yet
+      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-arm-none-eabi"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -121,8 +138,10 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           file: build/${{ env.VARIANT }}/docker/Dockerfile
-          build-args: CONTAINER_VERSION=${{ github.ref_name }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
+          build-args: |
+            CONTAINER_VERSION=${{ github.ref_name }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}            
+          tags: ${{ env.IMAGE_URL }}:latest
 
   madsciencelab-arm-none-eabi-plugins:
     runs-on: ubuntu-latest
@@ -132,7 +151,11 @@ jobs:
       attestations: write
       id-token: write
     env:
-      VARIANT: arm-none-eabi-plugins
+      VARIANT: 'arm-none-eabi-plugins'
+      # Cannot reference VARIANT as it does not exist yet
+      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-arm-none-eabi-plugins"
+      # Cannot reference IMAGE_NAME as it does not exist yet
+      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-arm-none-eabi-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -157,6 +180,8 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           file: build/${{ env.VARIANT }}/docker/Dockerfile
-          build-args: CONTAINER_VERSION=${{ github.ref_name }}
-          tags: ${{ env.IMAGE_BASE_NAME }}-${{ env.VARIANT }}:latest
+          build-args: |
+            CONTAINER_VERSION=${{ github.ref_name }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}            
+          tags: ${{ env.IMAGE_URL }}:latest
 

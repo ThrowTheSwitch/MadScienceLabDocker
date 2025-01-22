@@ -19,6 +19,10 @@ ARG CONTAINER_VERSION
 # Capture TARGETPLATFORM as an environment variable in the image
 ENV CONTAINER_PLATFORM=$TARGETPLATFORM
 
+# Docker image name used for Metadata, set via Docker build argument
+# The command line must include `--build-arg IMAGE_NAME=<name>`
+ENV MADSCIENCELAB_IMAGE_NAME=$IMAGE_NAME
+
 # Docker image tag for internal container use, set via Docker build argument
 ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 
@@ -28,8 +32,8 @@ ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 ##
 
 ## Metadata
-LABEL org.opencontainers.image.source=https://github.com/ThrowTheSwitch/MadScienceLabDocker
-LABEL org.opencontainers.image.url=https://github.com/ThrowTheSwitch/MadScienceLabDocker/blob/master/README.md
+LABEL org.opencontainers.image.source=https://github.com/ThrowTheSwitch/MadScienceLabDocker/releases
+LABEL org.opencontainers.image.url=https://hub.docker.com/r/throwtheswitch/$MADSCIENCELAB_IMAGE_NAME
 LABEL org.opencontainers.image.base.name=docker.io/bitnami/minideb
 LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"
