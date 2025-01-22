@@ -26,9 +26,8 @@ jobs:
       attestations: write
       id-token: write
     env:
-      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}"
-      # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-plugins"
+      IMAGE_NAME: "$IMAGE_BASE_NAME"
+      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -69,9 +68,9 @@ jobs:
     env:
       VARIANT: 'plugins'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-plugins"
+      IMAGE_NAME: "$IMAGE_BASE_NAME-plugins"
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-plugins"
+      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -111,9 +110,9 @@ jobs:
     env:
       VARIANT: 'arm-none-eabi'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-arm-none-eabi"
+      IMAGE_NAME: "$IMAGE_BASE_NAME-arm-none-eabi"
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-arm-none-eabi"
+      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-arm-none-eabi"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -153,9 +152,9 @@ jobs:
     env:
       VARIANT: 'arm-none-eabi-plugins'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "${{ env.IMAGE_BASE_NAME }}-arm-none-eabi-plugins"
+      IMAGE_NAME: "$IMAGE_BASE_NAME-arm-none-eabi-plugins"
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}-arm-none-eabi-plugins"
+      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-arm-none-eabi-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
