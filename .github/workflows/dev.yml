@@ -38,8 +38,8 @@ jobs:
       id-token: write
     env:
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}
-      # Cannot reference IMAGE_NAME as it does not exist yet
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}
+      IMAGE_DIR: build/standard
 
     steps:
       - name: 'Set up Ruby for generation tool'
@@ -56,9 +56,7 @@ jobs:
 
       - name: 'Run file generation'
         id: file-gen
-        run: |
-          bash build.sh --dir build/standard --version dev
-          echo "PATH=$(pwd)/build/standard" >> $GITHUB_OUTPUT
+        run: bash build.sh --dir ${{ env.IMAGE_DIR }} --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -79,10 +77,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          # context: ${{ steps.file-gen.outputs.PATH }}
-          # file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
           context: .
-          file: build/standard/docker/Dockerfile
+          file: ${{ env.IMAGE_DIR }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
@@ -100,11 +96,10 @@ jobs:
       attestations: write
       id-token: write
     env:
-      VARIANT: 'plugins'
-      # Cannot reference VARIANT as it does not exist yet
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-plugins
-      # Cannot reference IMAGE_NAME as it does not exist yet
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-plugins
+      IMAGE_DIR: build/plugins
 
     steps:
       - name: 'Set up Ruby for generation tool'
@@ -120,7 +115,7 @@ jobs:
         run: bundle install
 
       - name: 'Run file generation'
-        run: bash build.sh --dir build/standard --dir build/plugins --version dev
+        run: bash build.sh --dir build/standard --dir ${{ env.IMAGE_DIR }} --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -140,11 +135,15 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/${{ env.VARIANT }}/docker/Dockerfile
+          context: .
+          file: ${{ env.IMAGE_DIR }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_URL }}:latest
+          # Connect Docker driver to GitHub Action cache service
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   madsciencelab-arm-none-eabi:
     runs-on: ubuntu-latest
@@ -155,11 +154,10 @@ jobs:
       attestations: write
       id-token: write
     env:
-      VARIANT: 'arm-none-eabi'
-      # Cannot reference VARIANT as it does not exist yet
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-arm-none-eabi
-      # Cannot reference IMAGE_NAME as it does not exist yet
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi
+      IMAGE_DIR: build/arm-none-eabi
 
     steps:
       - name: 'Set up Ruby for generation tool'
@@ -175,7 +173,7 @@ jobs:
         run: bundle install
 
       - name: 'Run file generation'
-        run: bash build.sh --dir build/arm-none-eabi --version dev
+        run: bash build.sh --dir ${{ env.IMAGE_DIR }} --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -195,11 +193,15 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/${{ env.VARIANT }}/docker/Dockerfile
+          context: .
+          file: ${{ env.IMAGE_DIR }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}            
           tags: ${{ env.IMAGE_URL }}:latest
+          # Connect Docker driver to GitHub Action cache service
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   madsciencelab-arm-none-eabi-plugins:
     runs-on: ubuntu-latest
@@ -210,11 +212,10 @@ jobs:
       attestations: write
       id-token: write
     env:
-      VARIANT: 'arm-none-eabi-plugins'
-      # Cannot reference VARIANT as it does not exist yet
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-arm-none-eabi-plugins
-      # Cannot reference IMAGE_NAME as it does not exist yet
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi-plugins
+      IMAGE_DIR: build/arm-none-eabi-plugins
 
     steps:
       - name: 'Set up Ruby for generation tool'
@@ -230,7 +231,7 @@ jobs:
         run: bundle install
 
       - name: 'Run file generation'
-        run: bash build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version dev
+        run: bash build.sh --dir build/arm-none-eabi --dir build/plugins --dir ${{ env.IMAGE_DIR }} --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -250,11 +251,15 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/${{ env.VARIANT }}/docker/Dockerfile
+          context: .
+          file: ${{ env.IMAGE_DIR }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}            
           tags: ${{ env.IMAGE_URL }}:latest
+          # Connect Docker driver to GitHub Action cache service
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   dockerfiles-prerelease:
     runs-on: ubuntu-latest
