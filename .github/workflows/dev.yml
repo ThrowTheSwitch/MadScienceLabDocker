@@ -73,6 +73,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: 'Extract metadata for Docker Hub'
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_URL }}
+
       # Docker image: madsciencelab
       # Note: standard/ directory maps to madsciencelab image (no variants)
       - name: 'Build Docker image ${{ env.IMAGE_NAME }}'
@@ -80,11 +86,13 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: ${{ steps.file-gen.outputs.PATH }}
-          file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
+          file: docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_URL }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
