@@ -55,7 +55,10 @@ jobs:
         run: bundle install
 
       - name: 'Run file generation'
-        run: bash build.sh --dir build/standard --version dev
+        id: file-gen
+        run: |
+          bash build.sh --dir build/standard --version dev
+          echo "PATH=$(pwd)/build/standard" >> $GITHUB_OUTPUT
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -76,7 +79,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          file: build/standard/docker/Dockerfile
+          file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
