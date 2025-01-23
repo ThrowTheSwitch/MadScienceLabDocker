@@ -39,6 +39,7 @@ jobs:
     env:
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_DIR: build/standard
 
     steps:
@@ -96,9 +97,9 @@ jobs:
       attestations: write
       id-token: write
     env:
-      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-plugins
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-plugins
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_DIR: build/plugins
 
     steps:
@@ -154,9 +155,9 @@ jobs:
       attestations: write
       id-token: write
     env:
-      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-arm-none-eabi
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_DIR: build/arm-none-eabi
 
     steps:
@@ -212,9 +213,9 @@ jobs:
       attestations: write
       id-token: write
     env:
-      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_NAME: ${{ needs.image-details.outputs.base-name }}-arm-none-eabi-plugins
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi-plugins
+      # Image variant name is drawn from final `--dir` entry in file generation command line
       IMAGE_DIR: build/arm-none-eabi-plugins
 
     steps:
@@ -268,10 +269,16 @@ jobs:
       contents: write
 
     steps:
+      # Capture the SHA string
+      - name: Git commit short SHA as environment variable
+        shell: bash
+        run: |
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - uses: ncipollo/release-action@v1
         with:
           prerelease: true
           allowUpdates: true
-          tag: ${{ github.ref }}
+          tag: ${{ env.SHA_SHORT }}
           artifacts: "build/*/docker/Dockerfile,build/*/assets/shell/welcome"
 
