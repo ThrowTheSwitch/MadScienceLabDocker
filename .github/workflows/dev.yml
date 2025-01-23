@@ -73,6 +73,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: 'Debug'
+        run: |
+          ls -al ${{ steps.file-gen.outputs.PATH }}
+          tree ${{ steps.file-gen.outputs.PATH }}
+
+
       # Docker image: madsciencelab
       # Note: standard/ directory maps to madsciencelab image (no variants)
       - name: 'Build Docker image ${{ env.IMAGE_NAME }}'
@@ -85,7 +91,6 @@ jobs:
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_URL }}:latest
-        run: ls -al ${{ steps.file-gen.outputs.PATH }}
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
