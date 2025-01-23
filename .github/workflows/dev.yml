@@ -42,8 +42,16 @@ jobs:
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}
 
     steps:
+      - name: 'Set up Ruby for generation tool'
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Run file generation'
+        run: bash build.sh --dir build/standard --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -86,8 +94,16 @@ jobs:
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-plugins
 
     steps:
+      - name: 'Set up Ruby for generation tool'
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Run file generation'
+        run: bash build.sh --dir build/standard --dir build/plugins --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -129,8 +145,16 @@ jobs:
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi
 
     steps:
+      - name: 'Set up Ruby for generation tool'
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Run file generation'
+        run: bash build.sh --dir build/arm-none-eabi --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -172,8 +196,16 @@ jobs:
       IMAGE_URL: ${{ needs.image-details.outputs.base-url }}-arm-none-eabi-plugins
 
     steps:
+      - name: 'Set up Ruby for generation tool'
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Run file generation'
+        run: bash build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version dev
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -211,5 +243,5 @@ jobs:
           prerelease: true
           # Use the commit reference for the prerelease name
           commit: true
-          artifacts: "build/*/docker/Dockerfile"
+          artifacts: "build/*/docker/Dockerfile,build/*/assets/shell/welcome"
 
