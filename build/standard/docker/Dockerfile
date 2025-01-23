@@ -47,7 +47,6 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
-     gcc-multilib \
      gdb \
      libc-dev \
      locales \
@@ -102,6 +101,15 @@ RUN set -ex \
   && gem install bundler \
   && bundle install --gemfile=/assets/base/gems/Gemfile \
   && rm .gemrc 
+
+# gcc-multilib for processor architectures is only available for AMD64 image builds
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
+   && apt update \
+   && apt install -y \
+      gcc-multilib \
+      --no-install-recommends \
+   && apt clean \
+   && rm -rf /var/lib/apt/lists/* ; fi 
 
 
 ##

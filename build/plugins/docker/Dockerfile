@@ -47,7 +47,6 @@ RUN set -ex \
      build-essential \
      coreutils \
      gcc \
-     gcc-multilib \
      gcovr \
      gdb \
      git-all \
@@ -118,6 +117,15 @@ RUN set -ex \
   && gem install bundler \
   && bundle install --gemfile=/assets/base/gems/Gemfile \
   && rm .gemrc 
+
+# gcc-multilib for processor architectures is only available for AMD64 image builds
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
+   && apt update \
+   && apt install -y \
+      gcc-multilib \
+      --no-install-recommends \
+   && apt clean \
+   && rm -rf /var/lib/apt/lists/* ; fi 
 
 # Microsoft Dotnet installation to support `reportgenerator` for `gcov` plugin
 # Only available on AMD64 image builds
