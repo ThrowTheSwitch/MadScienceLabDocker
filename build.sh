@@ -298,7 +298,7 @@ if [ "$BUILD" = true ]; then
   
   # Perform multi-platform build with output as an image or optionally a direct push to the repository
   # Always echo this command to the command line
-  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$IMAGE_TAG" $PLATFORM_ARGS --build-arg CONTAINER_VERSION="$CONTAINER_VERSION" --build_arg IMAGE_NAME="$IMAGE" -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
+  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$IMAGE_TAG" $PLATFORM_ARGS --build-arg CONTAINER_VERSION="$CONTAINER_VERSION" --build-arg IMAGE_NAME="$IMAGE" -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
 
   # Capture exit code from attempted Docker image build
   success=$?
