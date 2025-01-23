@@ -85,6 +85,7 @@ jobs:
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_URL }}:latest
+        run: ls -al ${{ steps.file-gen.outputs.PATH }}
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
