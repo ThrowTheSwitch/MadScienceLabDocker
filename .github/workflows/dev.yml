@@ -262,7 +262,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  dockerfiles-prerelease:
+  artifacts-prerelease:
     runs-on: ubuntu-latest
     needs: [madsciencelab, madsciencelab-plugins, madsciencelab-arm-none-eabi, madsciencelab-arm-none-eabi-plugins]
     permissions:
