@@ -79,13 +79,17 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          context: ${{ steps.file-gen.outputs.PATH }}
-          file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
+          # context: ${{ steps.file-gen.outputs.PATH }}
+          # file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
+          context: build/standard/
+          file: build/standard/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_URL }}:latest
+          # Connect Docker driver to GitHub Action cache service
           cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
