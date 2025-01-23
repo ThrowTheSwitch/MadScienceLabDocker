@@ -58,7 +58,7 @@ jobs:
         id: file-gen
         run: |
           bash build.sh --dir build/standard --version dev
-          echo "PATH=$(pwd)/build/standard/" >> $GITHUB_OUTPUT
+          echo "PATH=$(pwd)/build/standard" >> $GITHUB_OUTPUT
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
@@ -73,12 +73,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: 'Debug'
-        run: |
-          ls -al ${{ steps.file-gen.outputs.PATH }}
-          tree ${{ steps.file-gen.outputs.PATH }}
-
-
       # Docker image: madsciencelab
       # Note: standard/ directory maps to madsciencelab image (no variants)
       - name: 'Build Docker image ${{ env.IMAGE_NAME }}'
@@ -86,7 +80,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: ${{ steps.file-gen.outputs.PATH }}
-          file: docker/Dockerfile
+          file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
