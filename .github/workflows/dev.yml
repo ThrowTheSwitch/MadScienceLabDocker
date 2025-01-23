@@ -271,7 +271,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           prerelease: true
-          # Use the commit reference for the prerelease name
-          commit: true
+          allowUpdates: true
+          tag: ${{ github.ref }}
           artifacts: "build/*/docker/Dockerfile,build/*/assets/shell/welcome"
 
