@@ -279,6 +279,8 @@ jobs:
         with:
           prerelease: true
           allowUpdates: true
-          name: ${{ env.SHA_SHORT }}
+          commit: ${{ github.sha }}
+          tag: ${{ env.SHA_SHORT }}
+          name: Prerelease-${{ env.SHA_SHORT }}
           artifacts: "build/*/docker/Dockerfile,build/*/assets/shell/welcome"
 
