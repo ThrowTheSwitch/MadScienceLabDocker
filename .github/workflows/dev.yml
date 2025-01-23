@@ -45,6 +45,7 @@ jobs:
       - name: 'Set up Ruby for generation tool'
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: 'Checkout GitHub Action'
@@ -97,6 +98,7 @@ jobs:
       - name: 'Set up Ruby for generation tool'
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: 'Checkout GitHub Action'
@@ -148,6 +150,7 @@ jobs:
       - name: 'Set up Ruby for generation tool'
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: 'Checkout GitHub Action'
@@ -199,6 +202,7 @@ jobs:
       - name: 'Set up Ruby for generation tool'
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: 'Checkout GitHub Action'
