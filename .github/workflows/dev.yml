@@ -47,9 +47,12 @@ jobs:
         with:
           ruby-version: '3.3'
           bundler-cache: true
-
+    
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Install file generation Ruby dependencies'
+        run: bundle install
 
       - name: 'Run file generation'
         run: bash build.sh --dir build/standard --version dev
@@ -104,6 +107,9 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
 
+      - name: 'Install file generation Ruby dependencies'
+        run: bundle install
+
       - name: 'Run file generation'
         run: bash build.sh --dir build/standard --dir build/plugins --version dev
 
@@ -156,6 +162,9 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
 
+      - name: 'Install file generation Ruby dependencies'
+        run: bundle install
+
       - name: 'Run file generation'
         run: bash build.sh --dir build/arm-none-eabi --version dev
 
@@ -207,6 +216,9 @@ jobs:
 
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
+
+      - name: 'Install file generation Ruby dependencies'
+        run: bundle install
 
       - name: 'Run file generation'
         run: bash build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version dev
