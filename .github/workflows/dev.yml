@@ -81,7 +81,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           # context: ${{ steps.file-gen.outputs.PATH }}
           # file: ${{ steps.file-gen.outputs.PATH }}/docker/Dockerfile
-          context: build/standard/
+          context: .
           file: build/standard/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
