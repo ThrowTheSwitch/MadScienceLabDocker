@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - *
+      - "*"
   pull_request:
     branches:
-      - main
+      - "main"
 
 env:
   IMAGE_ORG: 'throwtheswitch'
