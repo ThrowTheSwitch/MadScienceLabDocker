@@ -1,2 +1,6 @@
-# OS X junk
+# macOS junk
 .DS_Store
+
+# Generated artifacts
+build/*/docker/Dockerfile
+build/*/assets/shell/welcome
