@@ -58,7 +58,7 @@ jobs:
         id: file-gen
         run: |
           bash build.sh --dir build/standard --version dev
-          echo "PATH=$(pwd)/build/standard" >> $GITHUB_OUTPUT
+          echo "PATH=$(pwd)/build/standard/" >> $GITHUB_OUTPUT
 
       - name: 'Set up QEMU'
         uses: docker/setup-qemu-action@v3
