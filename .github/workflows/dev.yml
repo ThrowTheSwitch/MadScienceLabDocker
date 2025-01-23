@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '*'
+      - *
   pull_request:
     branches:
-      - 'main'
+      - main
 
 env:
   IMAGE_ORG: 'throwtheswitch'
@@ -18,16 +18,24 @@ jobs:
   # Jobs organized for concurrent Docker image builds
   # Jobs only build :latest images without pushing to Docker Hub
 
+  # This is a self-documenting workaround to the limitation that the global `env:` context is not available to jobs' `env:` contexts
+  prepare-env-vars:
+    runs-on: ubuntu-latest
+    steps:
+      # A step must be present in order to make use of `outputs:`
+       - run: echo "Setting environment variables shared by jobs..."
+    outputs:
+      IMAGE_BASE_NAME: ${{ env.IMAGE_BASE_NAME }}
+      IMAGE_URL_BASE: ${{ env.IMAGE_ORG }}/${{ env.IMAGE_BASE_NAME }}
+
   madsciencelab:
     runs-on: ubuntu-latest
+    needs: [prepare-env-vars]
     permissions:
       contents: read
       packages: write
       attestations: write
       id-token: write
-    env:
-      IMAGE_NAME: "$IMAGE_BASE_NAME"
-      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-plugins"
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -55,11 +63,12 @@ jobs:
           file: build/standard/docker/Dockerfile
           build-args: |
             CONTAINER_VERSION=${{ github.ref_name }}
-            IMAGE_NAME=${{ env.IMAGE_NAME }}            
-          tags: ${{ env.IMAGE_URL }}:latest
+            IMAGE_NAME=${{ env.IMAGE_BASE_NAME }}            
+          tags: ${{ env.IMAGE_URL_BASE }}:latest
 
   madsciencelab-plugins:
     runs-on: ubuntu-latest
+    needs: [prepare-env-vars]
     permissions:
       contents: read
       packages: write
@@ -68,9 +77,9 @@ jobs:
     env:
       VARIANT: 'plugins'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "$IMAGE_BASE_NAME-plugins"
+      IMAGE_NAME: ${{ env.IMAGE_BASE_NAME }}-plugins
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-plugins"
+      IMAGE_URL: ${{ env.IMAGE_URL_BASE }}-plugins
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -102,6 +111,7 @@ jobs:
 
   madsciencelab-arm-none-eabi:
     runs-on: ubuntu-latest
+    needs: [prepare-env-vars]
     permissions:
       contents: read
       packages: write
@@ -110,9 +120,9 @@ jobs:
     env:
       VARIANT: 'arm-none-eabi'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "$IMAGE_BASE_NAME-arm-none-eabi"
+      IMAGE_NAME: ${{ env.IMAGE_BASE_NAME }}-arm-none-eabi
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-arm-none-eabi"
+      IMAGE_URL: ${{ env.IMAGE_URL_BASE }}-arm-none-eabi
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -144,6 +154,7 @@ jobs:
 
   madsciencelab-arm-none-eabi-plugins:
     runs-on: ubuntu-latest
+    needs: [prepare-env-vars]
     permissions:
       contents: read
       packages: write
@@ -152,9 +163,9 @@ jobs:
     env:
       VARIANT: 'arm-none-eabi-plugins'
       # Cannot reference VARIANT as it does not exist yet
-      IMAGE_NAME: "$IMAGE_BASE_NAME-arm-none-eabi-plugins"
+      IMAGE_NAME: ${{ env.IMAGE_BASE_NAME }}-arm-none-eabi-plugins
       # Cannot reference IMAGE_NAME as it does not exist yet
-      IMAGE_URL: "$IMAGE_ORG/$IMAGE_BASE_NAME-arm-none-eabi-plugins"
+      IMAGE_URL: ${{ env.IMAGE_URL_BASE }}-arm-none-eabi-plugins
 
     steps:
       - name: 'Checkout GitHub Action'
