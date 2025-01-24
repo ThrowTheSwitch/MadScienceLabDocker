@@ -315,6 +315,12 @@ jobs:
 
       # Download all artifacts from the 4 Docker image builds
       - uses: actions/download-artifact@v4
+        with:
+          # `pattern:` is a workaround to an artifact upload incompatibility with docker/build-push-action@v6
+          # Otherwise, without `pattern:` the default of all artifacts would occur just as with this glob
+          # https://github.com/docker/build-push-action/issues/1167
+          pattern: "madsciencelab*"
+          path: artifacts
 
       # Capture the SHA string
       - name: 'Git commit short SHA as environment variable'
@@ -329,5 +335,4 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ env.SHA_SHORT }}
           name: Prerelease-${{ env.SHA_SHORT }}
-          artifacts: "**/Dockerfile,**/welcome"
-
+          artifacts: "artifacts/**/Dockerfile,artifacts/**/welcome"
