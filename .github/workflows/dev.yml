@@ -88,13 +88,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Upload the generated files as artifacts 
+      # Zip generated files as a single artifact
+      - name: 'Archive ${{ env.IMAGE_NAME }} generated files as a single artifact'
+        run: zip -j ${{ env.IMAGE_NAME }}.zip ${{ env.IMAGE_DIR }}/docker/Dockerfile ${{ env.IMAGE_DIR }}/assets/shell/welcome
+
+      # Upload the zip artifact
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.IMAGE_NAME }}
-          path: |
-            ${{ env.IMAGE_DIR }}/docker/Dockerfile
-            ${{ env.IMAGE_DIR }}/assets/shell/welcome
+          path: ${{ env.IMAGE_NAME }}.zip
           if-no-files-found: error
 
   madsciencelab-plugins:
@@ -155,13 +157,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Upload the generated files as artifacts 
+      # Zip generated files as a single artifact
+      - name: 'Archive ${{ env.IMAGE_NAME }} generated files as a single artifact'
+        run: zip -j ${{ env.IMAGE_NAME }}.zip ${{ env.IMAGE_DIR }}/docker/Dockerfile ${{ env.IMAGE_DIR }}/assets/shell/welcome
+
+      # Upload the zip artifact
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.IMAGE_NAME }}
-          path: |
-            ${{ env.IMAGE_DIR }}/docker/Dockerfile
-            ${{ env.IMAGE_DIR }}/assets/shell/welcome
+          path: ${{ env.IMAGE_NAME }}.zip
           if-no-files-found: error
 
   madsciencelab-arm-none-eabi:
@@ -222,13 +226,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Upload the generated files as artifacts 
+      # Zip generated files as a single artifact
+      - name: 'Archive ${{ env.IMAGE_NAME }} generated files as a single artifact'
+        run: zip -j ${{ env.IMAGE_NAME }}.zip ${{ env.IMAGE_DIR }}/docker/Dockerfile ${{ env.IMAGE_DIR }}/assets/shell/welcome
+
+      # Upload the zip artifact
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.IMAGE_NAME }}
-          path: |
-            ${{ env.IMAGE_DIR }}/docker/Dockerfile
-            ${{ env.IMAGE_DIR }}/assets/shell/welcome
+          path: ${{ env.IMAGE_NAME }}.zip
           if-no-files-found: error
 
   madsciencelab-arm-none-eabi-plugins:
@@ -289,15 +295,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Upload the generated files as artifacts 
+      # Zip generated files as a single artifact
+      - name: 'Archive ${{ env.IMAGE_NAME }} generated files as a single artifact'
+        run: zip -j ${{ env.IMAGE_NAME }}.zip ${{ env.IMAGE_DIR }}/docker/Dockerfile ${{ env.IMAGE_DIR }}/assets/shell/welcome
+
+      # Upload the zip artifact
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.IMAGE_NAME }}
-          path: |
-            ${{ env.IMAGE_DIR }}/docker/Dockerfile
-            ${{ env.IMAGE_DIR }}/assets/shell/welcome
+          path: ${{ env.IMAGE_NAME }}.zip
           if-no-files-found: error
 
+  # After all Docker image builds, collect results and publish a pre-release
   artifacts-prerelease:
     runs-on: ubuntu-latest
     needs:
@@ -317,7 +326,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           # `pattern:` is a workaround to an artifact upload incompatibility with docker/build-push-action@v6
-          # Otherwise, without `pattern:` the default of all artifacts would occur just as with this glob
+          # Otherwise, apart from this bug requiring `pattern:` the default of all artifacts would occur without any intervention
           # https://github.com/docker/build-push-action/issues/1167
           pattern: "madsciencelab*"
           path: artifacts
@@ -332,7 +341,8 @@ jobs:
         with:
           prerelease: true
           allowUpdates: true
+          bodyFile: .github/workflows/release.md
           commit: ${{ github.sha }}
           tag: ${{ env.SHA_SHORT }}
-          name: Prerelease-${{ env.SHA_SHORT }}
+          name: Dev Build Prerelease-${{ env.SHA_SHORT }}
           artifacts: "artifacts/**/Dockerfile,artifacts/**/welcome"
