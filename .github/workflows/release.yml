@@ -343,6 +343,7 @@ jobs:
           # This workflow is only triggered by tags.
           prerelease: false
           allowUpdates: true
-          name: Release ${{ github.ref_name }}
+          bodyFile: .github/workflows/release.md
+          name: ${{ github.ref_name }}
           artifacts: "artifacts/*/*.zip"
 
