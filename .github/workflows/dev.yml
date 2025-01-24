@@ -345,4 +345,4 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ env.SHA_SHORT }}
           name: Dev Build Prerelease-${{ env.SHA_SHORT }}
-          artifacts: "artifacts/*.zip"
+          artifacts: "artifacts/*/*.zip"
