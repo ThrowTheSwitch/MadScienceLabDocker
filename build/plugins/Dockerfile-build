@@ -1,7 +1,7 @@
 
 # Microsoft Dotnet installation to support `reportgenerator` for `gcov` plugin
 # Only available on AMD64 image builds
-RUN if [[ $TARGETPLATFORM == "linux/amd64" ]] ; then set -ex \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
    && dpkg -i /assets/plugins/dotnet/packages-microsoft-prod.deb \
    && apt update \
    && apt install -y \

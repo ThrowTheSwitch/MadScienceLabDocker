@@ -12,6 +12,10 @@ FROM bitnami/minideb:bookworm
 # recognized platform string (e.g. "linux/amd64").
 ARG TARGETPLATFORM
 
+# Docker image name used for Metadata, set via Docker build argument
+# The command line must include `--build-arg IMAGE_NAME=<name>` <org>/<name>
+ARG IMAGE_NAME
+
 # This build argument allows setting the image tag at build time to support CI-based builds
 # The command line must include `--build-arg CONTAINER_VERSION=<version>`
 ARG CONTAINER_VERSION
@@ -28,8 +32,8 @@ ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 ##
 
 ## Metadata
-LABEL org.opencontainers.image.source=https://github.com/ThrowTheSwitch/MadScienceLabDocker
-LABEL org.opencontainers.image.url=https://github.com/ThrowTheSwitch/MadScienceLabDocker/blob/master/README.md
+LABEL org.opencontainers.image.source=https://github.com/ThrowTheSwitch/MadScienceLabDocker/releases
+LABEL org.opencontainers.image.url=https://hub.docker.com/r/$IMAGE_NAME
 LABEL org.opencontainers.image.base.name=docker.io/bitnami/minideb
 LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"

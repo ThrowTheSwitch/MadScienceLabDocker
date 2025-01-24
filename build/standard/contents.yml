@@ -1,4 +1,5 @@
 # Ruby symbols not allowed as keys in inline YML
 - {platform: '*', entry: 'The GNU Compiler Collection (gcc, etc.)'}
 - {platform: '*', entry: 'Standard C libraries'}
+- {platform: 'linux/amd64', entry: 'GCC Multilib support for platform architectures'}
 - {platform: '*', entry: "The GNU Debugger (gdb) for Ceedling's backtrace feature"}
