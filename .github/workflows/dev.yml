@@ -307,7 +307,7 @@ jobs:
           if-no-files-found: error
 
   # After all Docker image builds, collect results and publish a pre-release
-  artifacts-prerelease:
+  artifacts-dev-build:
     runs-on: ubuntu-latest
     needs:
       - madsciencelab
@@ -344,5 +344,5 @@ jobs:
           bodyFile: .github/workflows/release.md
           commit: ${{ github.sha }}
           tag: ${{ env.SHA_SHORT }}
-          name: Dev Build Prerelease-${{ env.SHA_SHORT }}
+          name: Dev Build ${{ env.SHA_SHORT }}
           artifacts: "artifacts/*/*.zip"
