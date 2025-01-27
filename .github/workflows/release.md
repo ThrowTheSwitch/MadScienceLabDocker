@@ -1,6 +1,6 @@
 ## MadScienceLab Docker Images Builds
 
-Each build produces multiple variants of the `throwtheswitch/madsciencelab` Docker images containing Ceedling and its supporting frameworks as well as various utilities and compilation toolchains. Each image built from this repository targets multiple runtime host platforms.
+Each build produces multiple variants of the `throwtheswitch/madsciencelab` Docker images containing [Ceedling](https://github.com/ThrowTheSwitch/Ceedling) and its supporting frameworks as well as various utilities and compilation toolchains. Each image built from this repository targets multiple runtime host platforms.
 
 Build types (via Github Actions):
 
@@ -8,6 +8,8 @@ Build types (via Github Actions):
 1. A release build adds to (1) by also pushing the resulting Docker images to Docker Hub.
 
 See the [Docker Hub repository](https://hub.docker.com/r/throwtheswitch) for official releases of the resulting Docker images and their documentation.
+
+Versioning of this repository and the resulting tags in Docker Hub tracks Ceedling’s version. Docker image changes are maintained with a lowercase letter suffix appended to the version of Ceedling contained in each image itself.
 
 ## Build Artifacts
 
