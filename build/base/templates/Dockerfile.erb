@@ -26,6 +26,9 @@ ENV CONTAINER_PLATFORM=$TARGETPLATFORM
 # Docker image tag for internal container use, set via Docker build argument
 ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 
+# Docker Hub URL
+ENV DOCKERHUB_URL=https://hub.docker.com/r/$IMAGE_NAME
+
 ##
 ## Docker Image Best Practices
 ## https://docs.docker.com/develop/develop-images/instructions/
@@ -33,7 +36,7 @@ ENV MADSCIENCELAB_VERSION=$CONTAINER_VERSION
 
 ## Metadata
 LABEL org.opencontainers.image.source=https://github.com/ThrowTheSwitch/MadScienceLabDocker/releases
-LABEL org.opencontainers.image.url=https://hub.docker.com/r/$IMAGE_NAME
+LABEL org.opencontainers.image.url=$DOCKERHUB_URL
 LABEL org.opencontainers.image.base.name=docker.io/bitnami/minideb
 LABEL org.opencontainers.image.title="Mad Science Lab"
 LABEL org.opencontainers.image.description="Contains Ceedling, supporting frameworks, and GNU C toolchain to provide a unit testing and build system environment for C projects"

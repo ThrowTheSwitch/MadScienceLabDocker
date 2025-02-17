@@ -5,8 +5,10 @@ echo "  This container includes:"
 <%# INSERT CONTENTS LIST -%>
 <% @contents.each {|item|%><%= "if [[ \"$CONTAINER_PLATFORM\" == #{item['platform']} ]]; then echo \"   * #{item['entry']}\"; fi\n"%><% } -%>
 echo "\e[0m"
+echo "  Documentation available at $DOCKERHUB_URL"
 echo "  NOTICE: Container user \`$(whoami)\` lacks root privileges as a security best practice."
-echo "  This limits installing software and more. See Docker Hub page for security docs and options."
+echo ""
+echo "  Please consider supporting this work: https://github.com/sponsors/ThrowTheSwitch"
 echo "\e[33m"
 echo "  To get started, enter \`ceedling help\` at the command line..."
 echo "\e[0m"
