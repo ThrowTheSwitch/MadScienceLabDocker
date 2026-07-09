@@ -3,9 +3,6 @@
 # Only available on AMD64 image builds
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
    && dpkg -i /assets/plugins/dotnet/packages-microsoft-prod.deb \
-   && apt update \
-   && apt install -y \
+   && install_packages \
       dotnet-sdk-8.0 \
-      --no-install-recommends \
-   && apt clean \
-   && rm -rf /var/lib/apt/lists/* ; fi
+   ; fi

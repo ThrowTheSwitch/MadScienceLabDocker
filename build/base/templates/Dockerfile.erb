@@ -1,7 +1,7 @@
 ## Base Docker Image
 ## minideb is a slim Debian base image well maintained by VMWare
 ## https://github.com/bitnami/minideb
-FROM bitnami/minideb:bookworm
+FROM bitnami/minideb:trixie
 
 # This image is meant to include multi-platform support via Docker's buildx/BuildKit client and service. 
 # In recent versions of Docker desktop `docker build` uses the buildx client by default. Under such a build,
@@ -44,18 +44,11 @@ LABEL org.opencontainers.image.description="Contains Ceedling, supporting framew
 
 # Image base / set up
 RUN set -ex \
-  # Update package management environment
-  && apt update \
-  && apt -y upgrade \
 <%# INSERT SETUP BLOCKS -%>
 <% @setup.each {|block| %><%= block.concat("\n") %><% } -%>
-  && apt install -y \
+  && install_packages \
 <%# INSERT PACKAGE LIST TO INSTALL -%>
-<% @packages.each {|package|%><%= "     #{package} \\\n"%><% } -%>
-     --no-install-recommends \
-  && apt autoremove \
-  && apt clean \
-  && rm -rf /var/lib/apt/lists/*
+<% @packages.each_with_index {|package, i|%><%= "     #{package}" + (i == @packages.length - 1 ? "\n" : " \\\n") %><% } -%>
 
 ##
 ## Locale setting for Ruby encoding handling
