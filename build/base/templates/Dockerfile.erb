@@ -101,6 +101,10 @@ RUN set -ex \
   && mkdir -p /home/dev \
   && chown dev:nonroot /home/dev \
   && chmod -R ug+rwx /home/dev \
+  # Give the `nonroot` group write access to the system-wide zsh env file so PATH
+  # extensions added later (as `dev`) are visible to every container user, not just `dev`
+  && chown root:nonroot /etc/zsh/zshenv \
+  && chmod ug+rw /etc/zsh/zshenv \
   # Copy simple Z shell config file & give new user permissions
   && cp /assets/base/shell/zshrc-dev /home/dev/.zshrc \
   && chown dev:nonroot /home/dev/.zshrc \
