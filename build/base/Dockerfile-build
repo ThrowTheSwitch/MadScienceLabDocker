@@ -3,9 +3,12 @@
 RUN set -ex \
   # Prevent documentation installation taking up space
   echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
-  # Install Ceedling and related gems without RDoc
-  # We do not use RDoc, and RDoc uses a Ruby parser that is sometimes incapable of parsing valid Ruby
+  # Install Ceedling and related gems without RDoc.
+  # We do not use RDoc, and RDoc uses a Ruby parser that is sometimes incapable of parsing valid Ruby.
   && gem install --force --local --no-document /assets/base/gems/*.gem \
-  && gem install bundler -v "~> 2.5" \
-  && bundle install --gemfile=/assets/base/gems/Gemfile \
+  # Bundler >= 2.6.5 required: --prefer-local didn't respect default gems before this
+  && gem install bundler -v "~> 2.6" \
+  # --prefer-local: reuse already-installed gems (e.g. Ruby's default `erb`/`benchmark`) instead of
+  # always fetching the newest version, which would otherwise force a native-extension rebuild
+  && bundle install --gemfile=/assets/base/gems/Gemfile --prefer-local \
   && rm .gemrc
