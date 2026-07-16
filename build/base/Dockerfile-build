@@ -3,8 +3,9 @@
 RUN set -ex \
   # Prevent documentation installation taking up space
   echo -e "---\ngem: --no-ri --no-rdoc\n...\n" > .gemrc \
-  # Install Ceedling and related gems
-  && gem install --force --local /assets/base/gems/*.gem \
+  # Install Ceedling and related gems without RDoc
+  # We do not use RDoc, and RDoc uses a Ruby parser that is sometimes incapable of parsing valid Ruby
+  && gem install --force --local --no-document /assets/base/gems/*.gem \
   && gem install bundler -v "~> 2.5" \
   && bundle install --gemfile=/assets/base/gems/Gemfile \
   && rm .gemrc
