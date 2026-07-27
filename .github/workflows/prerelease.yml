@@ -42,8 +42,17 @@ on:
     tags:
       - 'v*.*.*-pre.*'
 
+# contents: write is required to create and upload GitHub releases.
+# packages/attestations/id-token: write are required because the called
+# _build-variant.yml reusable workflow's job requests them (for the real
+# multi-platform build here) — a reusable workflow's job can't request
+# more permissions than its caller grants, so these must be listed here
+# even though this workflow's own `publish` job only needs contents:write.
 permissions:
   contents: write
+  packages: write
+  attestations: write
+  id-token: write
 
 jobs:
   build:

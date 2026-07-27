@@ -49,8 +49,18 @@ on:
       - 'v*.*.*'
       - '!v*.*.*-*'   # Exclude pre-release tags (e.g. v1.1.2-pre.1, v1.1.2a-pre.1)
 
+# contents: write is required to create and upload GitHub releases.
+# packages/attestations/id-token: write are required because the called
+# _build-variant.yml reusable workflow's job requests them (for the real
+# multi-platform build + push here) — a reusable workflow's job can't
+# request more permissions than its caller grants, so these must be listed
+# here even though this workflow's own `publish` job only needs
+# contents:write.
 permissions:
   contents: write
+  packages: write
+  attestations: write
+  id-token: write
 
 jobs:
   build:
