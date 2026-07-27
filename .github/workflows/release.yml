@@ -114,41 +114,44 @@ jobs:
           pattern: "madsciencelab*"
           path: artifacts
 
-      # Strip the leading 'v'; the tag itself contains no -pre.N suffix
-      # here (guaranteed by the job-level 'if' guard above).
-      - name: 'Extract Changelog Section for Release Notes'
+      # Build the release body from release-notes-template.md followed by
+      # the docs/Changelog.md section matching this tag's version. Strip
+      # the leading 'v'; the tag itself contains no -pre.N suffix here
+      # (guaranteed by the job-level 'if' guard above).
+      - name: 'Build Release Notes'
         id: changelog
         shell: bash
         run: |
           SEMVER="${GITHUB_REF_NAME#v}"
           BODY_FILE="${RUNNER_TEMP}/release_body.md"
 
-          echo "found=false" >> "$GITHUB_OUTPUT"
+          cat .github/workflows/release-notes-template.md > "$BODY_FILE"
+          echo "" >> "$BODY_FILE"
 
-          if .github/workflows/extract_changelog.sh "${SEMVER}" "docs/Changelog.md" "${BODY_FILE}"; then
-            EOF_MARKER="RELEASE_BODY_EOF_$(date +%s)"
-            echo "body<<${EOF_MARKER}" >> "$GITHUB_OUTPUT"
-            cat "${BODY_FILE}"         >> "$GITHUB_OUTPUT"
-            echo "${EOF_MARKER}"       >> "$GITHUB_OUTPUT"
-            echo "found=true"          >> "$GITHUB_OUTPUT"
+          if .github/workflows/extract_changelog.sh "${SEMVER}" "docs/Changelog.md" "${RUNNER_TEMP}/changelog_section.md"; then
+            cat "${RUNNER_TEMP}/changelog_section.md" >> "$BODY_FILE"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 'Publish GitHub Release (changelog body)'
+      - name: 'Publish GitHub Release (changelog found)'
         if: steps.changelog.outputs.found == 'true'
         uses: ncipollo/release-action@v1
         with:
           prerelease: false
           allowUpdates: true
           name: ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.body }}
+          bodyFile: ${{ runner.temp }}/release_body.md
           artifacts: "artifacts/*/*.zip"
 
-      - name: 'Publish GitHub Release (auto-generated notes)'
+      - name: 'Publish GitHub Release (changelog not found, auto notes appended)'
         if: steps.changelog.outputs.found != 'true'
         uses: ncipollo/release-action@v1
         with:
           prerelease: false
           allowUpdates: true
           name: ${{ github.ref_name }}
+          bodyFile: ${{ runner.temp }}/release_body.md
           generateReleaseNotes: true
           artifacts: "artifacts/*/*.zip"
