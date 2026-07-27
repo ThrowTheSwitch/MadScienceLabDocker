@@ -1,0 +1,161 @@
+# =========================================================================
+#   MadScienceLab Docker Images
+#   ThrowTheSwitch.org
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
+# -----------------------------------------------------------------------
+# Internal reusable workflow — not intended to be triggered directly.
+# Called once per image variant (matrix job) by ci.yml, prerelease.yml,
+# and release.yml.
+#
+# Purpose:
+#   Generate the Dockerfile + welcome file for one image variant, lint and
+#   structurally validate the generated Dockerfile, then — depending on
+#   the calling workflow's mode — optionally perform a real multi-platform
+#   Docker image build, and optionally push that build to Docker Hub.
+#
+# Mode matrix (controlled by the `build` / `push` inputs):
+#   ci.yml         build=false push=false  → generate + lint + check only
+#   prerelease.yml build=true  push=false  → also a real multi-platform
+#                                             build, image kept local
+#   release.yml    build=true  push=true   → also pushed to Docker Hub
+#
+# Validation vs. build:
+#   Lint (hadolint) and structural validation (`docker buildx build
+#   --check`) never produce an image and never need QEMU — they run on
+#   every call, including plain push/PR builds, without the cost of a
+#   real multi-platform build. QEMU is only set up when `build: true`.
+# -----------------------------------------------------------------------
+
+---
+name: "Build Docker Image Variant"
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        type: string
+        required: true
+        description: 'Full image name, e.g. madsciencelab-plugins'
+      dir_args:
+        type: string
+        required: true
+        description: 'Space-separated --dir arguments for build.sh, e.g. "--dir build/standard --dir build/plugins"'
+      image_dir:
+        type: string
+        required: true
+        description: 'Directory holding the generated docker/ and assets/ output for this variant, e.g. build/plugins'
+      version:
+        type: string
+        required: true
+        description: 'Value passed to build.sh --version and baked in as the CONTAINER_VERSION build-arg'
+      build:
+        type: boolean
+        required: false
+        default: false
+        description: 'Perform a real multi-platform docker buildx build'
+      push:
+        type: boolean
+        required: false
+        default: false
+        description: 'Push the build to Docker Hub (requires build: true)'
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+
+env:
+  IMAGE_URL: throwtheswitch/${{ inputs.image_name }}
+
+jobs:
+  build-variant:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+
+      - name: 'Set up Ruby for generation tool'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      # Workaround: fix Ruby toolcache gem dir permissions (Bundler exit 38)
+      # Issue: https://github.com/rubygems/rubygems/issues/7983
+      - name: 'Apply Workaround for Ruby toolcache Gem Directory Permissions'
+        run: |
+          sudo chmod -R go-w /opt/hostedtoolcache/Ruby/**/**/lib/ruby/gems/**/gems || true
+
+      # --prefer-local: reuse gems already installed with Ruby rather than
+      # always fetching/rebuilding the newest version (same rationale as
+      # the --prefer-local treatment in build/base/Dockerfile-build)
+      - name: 'Install file generation Ruby dependencies'
+        run: bundle install --prefer-local
+
+      - name: 'Run file generation'
+        id: file-gen
+        run: bash build.sh ${{ inputs.dir_args }} --version ${{ inputs.version }}
+
+      - name: 'Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+
+      # Fast, no Docker daemon involved — pure static analysis of the
+      # generated Dockerfile text.
+      - name: 'Lint generated Dockerfile with hadolint'
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ inputs.image_dir }}/docker/Dockerfile
+
+      # Structural/syntax validation via BuildKit's check frontend — parses
+      # and validates the Dockerfile without executing any RUN steps or
+      # producing image layers. No QEMU required.
+      - name: 'Validate generated Dockerfile with docker build --check'
+        run: docker buildx build --check -f ${{ inputs.image_dir }}/docker/Dockerfile .
+
+      - name: 'Set up QEMU'
+        if: ${{ inputs.build }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: 'Login to Docker Hub'
+        if: ${{ inputs.push }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 'Build Docker image ${{ inputs.image_name }}'
+        if: ${{ inputs.build }}
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: .
+          file: ${{ inputs.image_dir }}/docker/Dockerfile
+          build-args: |
+            CONTAINER_VERSION=${{ inputs.version }}
+            IMAGE_NAME=${{ inputs.image_name }}
+          push: ${{ inputs.push }}
+          tags: |
+            ${{ env.IMAGE_URL }}:${{ inputs.version }}
+            ${{ env.IMAGE_URL }}:latest
+          # Connect Docker driver to GitHub Action cache service
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Zip generated files as a single artifact — always produced, even
+      # for validate-only (ci.yml) runs
+      - name: 'Archive ${{ inputs.image_name }} generated files as a single artifact'
+        run: zip -j ${{ inputs.image_name }}.zip ${{ inputs.image_dir }}/docker/Dockerfile ${{ inputs.image_dir }}/assets/shell/welcome
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.image_name }}
+          path: ${{ inputs.image_name }}.zip
+          if-no-files-found: error

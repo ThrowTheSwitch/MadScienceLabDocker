@@ -5,49 +5,42 @@
 # =========================================================================
 
 # -----------------------------------------------------------------------
-# Release Workflow
+# Pre-Release Workflow
 #
 # Purpose:
 #   Generate, lint, and validate all four Docker image variants (as in
 #   ci.yml), additionally performing a real multi-platform docker buildx
-#   build for each and pushing it to Docker Hub, then publish a full
-#   GitHub release with release notes extracted from docs/Changelog.md
-#   and the generated Dockerfile/asset artifacts attached.
+#   build for each (no push to Docker Hub), then publish a GitHub
+#   pre-release with release notes extracted from docs/Changelog.md and
+#   the generated Dockerfile/asset artifacts attached.
 #
 # Trigger:
-#   Push of a tag matching: v*.*.*  (e.g. v1.1.2, v1.1.2a)
-#
-#   Important: the v*.*.* glob also matches pre-release tags
-#   (e.g. v1.1.2a-pre.1). The 'if' guard on the publish job provides a
-#   second line of defense: any tag containing a hyphen is rejected and
-#   the publish job is skipped, so only clean version tags (no -pre.N
-#   suffix) produce a full release.
+#   Push of a tag matching: v*.*.*-pre.*  (e.g. v1.1.2-pre.1, v1.1.2a-pre.1)
 #
 # Tag convention:
 #   v1.1.2        full release, no image-only revision
 #   v1.1.2a       full release, lowercase letter = image-only revision
-#   v1.1.2a-pre.1 pre-release of the above (handled by prerelease.yml)
+#   v1.1.2a-pre.1 pre-release of the above; -pre.N always comes last
 #
 # Changelog lookup:
 #   The docs/Changelog.md section header must match the tag's version
-#   string verbatim (after stripping the leading 'v'), letter suffix
-#   included, e.g. tag v1.1.2a looks up header "# [1.1.2a]". If no
-#   matching section is found, GitHub's auto-generated release notes are
-#   used instead.
+#   string verbatim (after stripping the leading 'v' and any trailing
+#   '-pre.N'), letter suffix included, e.g. tag v1.1.2a-pre.1 looks up
+#   header "# [1.1.2a]". If no matching section is found, GitHub's
+#   auto-generated release notes are used instead.
 #
 # Related workflows:
-#   ci.yml         — runs on every push/PR; validation only, no build
-#   prerelease.yml — triggered by pre-release tags (v*.*.*-pre.*); also
-#                    performs a real multi-platform build, but no push
+#   ci.yml       — runs on every push/PR; validation only, no build
+#   release.yml  — triggered by full release tags (v*.*.*, no suffix);
+#                  also pushes to Docker Hub
 # -----------------------------------------------------------------------
 
-name: Release
+name: Pre-Release
 
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - '!v*.*.*-*'   # Exclude pre-release tags (e.g. v1.1.2-pre.1, v1.1.2a-pre.1)
+      - 'v*.*.*-pre.*'
 
 permissions:
   contents: write
@@ -78,16 +71,12 @@ jobs:
       dir_args: ${{ matrix.dir_args }}
       version: ${{ github.ref_name }}
       build: true
-      push: true
+      push: false
     secrets: inherit
 
   publish:
-    name: "Publish Release"
+    name: "Publish Pre-Release"
     needs: build
-    # Rejects tags that contain a hyphen (e.g. v1.1.2a-pre.1), which would
-    # otherwise match the v*.*.* trigger glob and create a spurious full
-    # release instead of leaving it to prerelease.yml
-    if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -104,13 +93,15 @@ jobs:
           pattern: "madsciencelab*"
           path: artifacts
 
-      # Strip the leading 'v'; the tag itself contains no -pre.N suffix
-      # here (guaranteed by the job-level 'if' guard above).
+      # Strip the leading 'v' then take only the version core (including
+      # any letter suffix), discarding the '-pre.N' marker, e.g.
+      # v1.1.2a-pre.1 → 1.1.2a. Changelog entries are keyed on this string.
       - name: 'Extract Changelog Section for Release Notes'
         id: changelog
         shell: bash
         run: |
           SEMVER="${GITHUB_REF_NAME#v}"
+          SEMVER="${SEMVER%%-*}"
           BODY_FILE="${RUNNER_TEMP}/release_body.md"
 
           echo "found=false" >> "$GITHUB_OUTPUT"
@@ -123,22 +114,26 @@ jobs:
             echo "found=true"          >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 'Publish GitHub Release (changelog body)'
+      - name: 'Publish GitHub Pre-Release (changelog body)'
         if: steps.changelog.outputs.found == 'true'
         uses: ncipollo/release-action@v1
         with:
-          prerelease: false
+          prerelease: true
           allowUpdates: true
+          tag: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
           name: ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.body }}
           artifacts: "artifacts/*/*.zip"
 
-      - name: 'Publish GitHub Release (auto-generated notes)'
+      - name: 'Publish GitHub Pre-Release (auto-generated notes)'
         if: steps.changelog.outputs.found != 'true'
         uses: ncipollo/release-action@v1
         with:
-          prerelease: false
+          prerelease: true
           allowUpdates: true
+          tag: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
           name: ${{ github.ref_name }}
           generateReleaseNotes: true
           artifacts: "artifacts/*/*.zip"
