@@ -1,0 +1,7 @@
+ignored:
+  # `gem install --force --local --no-document /assets/base/gems/*.gem` installs
+  # pre-built .gem files whose versions are already pinned via Gemfile.lock at
+  # image-build time (see build/base/Dockerfile-build) — hadolint can't see
+  # through the glob to know that, so it flags every RUN gem install in the
+  # generated Dockerfiles as unpinned. Not fixable at the Dockerfile level.
+  - DL3028
