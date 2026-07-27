@@ -1,0 +1,66 @@
+# =========================================================================
+#   MadScienceLab Docker Images
+#   ThrowTheSwitch.org
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
+# -----------------------------------------------------------------------
+# CI Workflow
+#
+# Purpose:
+#   Generate all four Dockerfile/asset variants and validate them —
+#   hadolint (static lint) then `docker buildx build --check` (structural
+#   validation) — without performing a real Docker image build. No QEMU,
+#   no Docker Hub interaction, no GitHub release. Generated artifacts are
+#   attached to the workflow run for inspection.
+#
+# Trigger:
+#   Any push to any branch, any pull request targeting main, or a manual
+#   workflow_dispatch.
+#
+# Related workflows:
+#   prerelease.yml — triggered by prerelease tags (v*.*.*-pre.*, etc.);
+#                    also performs a real multi-platform build (no push)
+#   release.yml    — triggered by release tags (v*.*.*, no suffix);
+#                    also performs a real multi-platform build and pushes
+#                    to Docker Hub
+# -----------------------------------------------------------------------
+
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    name: "Build ${{ matrix.image_name }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image_name: madsciencelab
+            image_dir: build/standard
+            dir_args: '--dir build/standard'
+          - image_name: madsciencelab-plugins
+            image_dir: build/plugins
+            dir_args: '--dir build/standard --dir build/plugins'
+          - image_name: madsciencelab-arm-none-eabi
+            image_dir: build/arm-none-eabi
+            dir_args: '--dir build/arm-none-eabi'
+          - image_name: madsciencelab-arm-none-eabi-plugins
+            image_dir: build/arm-none-eabi-plugins
+            dir_args: '--dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins'
+    uses: ./.github/workflows/_build-variant.yml
+    with:
+      image_name: ${{ matrix.image_name }}
+      image_dir: ${{ matrix.image_dir }}
+      dir_args: ${{ matrix.dir_args }}
+      version: dev
+      build: false
+      push: false

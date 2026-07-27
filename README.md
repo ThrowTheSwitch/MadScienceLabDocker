@@ -51,7 +51,11 @@ Examples:
 * `./build.sh --dir build/arm-none-eabi --version 1.0.0`
 * `./build.sh --dir build/arm-none-eabi --dir build/plugins --dir build/arm-none-eabi-plugins --version <tag>`
 
-The Github Action maintained in this repository uses the same approach as the preceding to generate the Dockerfiles attached to releases. The Github Action goes on to build images from those Dockerfiles and pushes them to Docker Hub.
+The Github Actions maintained in this repository use the same approach as the preceding to generate the Dockerfiles attached to workflow runs and releases:
+
+* Any push or pull request generates the four Dockerfile/asset variants and validates each generated Dockerfile with [hadolint](https://github.com/hadolint/hadolint) (static lint) and `docker buildx build --check` (structural validation) — no Docker image is actually built, and the generated artifacts are attached to the workflow run.
+* Pushing a pre-release tag (see Versioning, below) does all of the above, plus a real multi-platform Docker image build for each variant (not pushed to Docker Hub), plus a GitHub pre-release with the generated artifacts attached and release notes drawn from [`docs/Changelog.md`](docs/Changelog.md).
+* Pushing a release tag does all of the above, plus pushes the built images to Docker Hub, plus a full GitHub release.
 
 ## Ruby tool & shell script
 
@@ -62,6 +66,14 @@ The shell script that calls the Ruby tool includes many options useful to a deve
 # 🔢 Versioning
 
 Versioning of this repository and the resulting tags in Docker Hub track [Ceedling]’s version. Docker image changes are maintained with a lowercase letter suffix appended to the version of Ceedling contained in each _MadScienceLab_ image itself.
+
+Git tags drive the Github Actions release workflows and follow this pattern:
+
+* `v1.1.2` — a full release tracking Ceedling 1.1.2 with no image-only changes.
+* `v1.1.2a` — a full release with an image-only revision (lowercase letter suffix) on top of Ceedling 1.1.2.
+* `v1.1.2a-pre.1` — a pre-release of the above; the `-pre.N` suffix always comes last. Pushing a tag like this builds real multi-platform images (without pushing to Docker Hub) and publishes a GitHub pre-release for testing before the corresponding non-suffixed tag is pushed.
+
+Tags without a `-pre.N` suffix trigger a full release, including a push to Docker Hub. Only tags matching this `v`-prefixed pattern trigger release/pre-release Github Actions; all other pushes and pull requests only generate and validate the Dockerfiles (see Usage, above).
 
 # 🔒 Security
 
