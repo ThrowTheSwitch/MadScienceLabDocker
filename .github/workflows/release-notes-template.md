@@ -14,8 +14,9 @@ Versioning of this repository and the resulting tags in Docker Hub tracks Ceedli
 
 # Build Artifacts
 
-* A zip archive for each Docker image containing the generated Dockerfile and any other generated file artifacts used to build the image in Docker Hub.
-* A zip archive of the entire project including the static assets used to build the Docker images.
+Every build—whether triggered by a push, pull request, pre-release tag, or release tag—produces a zip archive for each Docker image variant. The archive contains that variant’s generated Dockerfile and any other artifacts used to build the image. These are attached to that build’s Github Action run.
+
+Pre-releases and releases attach those same per-variant zip archives to this Github release alongside a zip archive of the project source at this tag (created automatically by Github).
 
 See this repository’s documentation for instructions on how to use the tools of this repository and how to manually build the Docker images this repository maintains.
 
