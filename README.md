@@ -63,6 +63,22 @@ The Ruby tool maintained in this repository does all of the Dockerfile text gene
 
 The shell script that calls the Ruby tool includes many options useful to a developer working on this repostory or anyone working to extend the Dockerfiles created by the tooling. Run `./build.sh -h` for a listing of the various options.
 
+## Bullseye Licensing
+
+The `plugins` and `arm-none-eabi-plugins` image variants bundle [Bullseye coverage][bullseye], a commercial code coverage toolset. Its installer requires a valid license key to install the software. That key is used only as a Docker build secret; it's never written to the image, a build-arg, or this repository. The Bullseye tooling in the Docker image variants require licensing at the time of use. See [BullseyeCoverage’s license manager docs][bullseye-license] and the Ceedling [Bullseye plugin docs][ceedling-bullseye-plugin].
+
+* **GitHub Actions**: Require a repository secret named `BULLSEYE_LICENSE_KEY` (repo Settings → Secrets and variables → Actions).
+* **Local builds**: Pass the key as a build secret via `build.sh --secret`, with the secret `id` set to exactly `bullseye_license_key`:
+  ```sh
+  echo -n "<your-license-key>" > /tmp/bullseye_key.txt
+  ./build.sh --dir build/standard --dir build/plugins --build \
+    --secret "id=bullseye_license_key,src=/tmp/bullseye_key.txt"
+  ```
+
+[bullseye]: https://www.bullseye.com/
+[bullseye-license]: https://www.bullseye.com/help/licenseManager.html
+[ceedling-bullseye-plugin]: https://throwtheswitch.github.io/Ceedling/latest/plugins/bullseye/
+
 # 🔢 Versioning
 
 Versioning of this repository and the resulting tags in Docker Hub track [Ceedling]’s version. Docker image changes are maintained with a lowercase letter suffix appended to the version of Ceedling contained in each _MadScienceLab_ image itself.
