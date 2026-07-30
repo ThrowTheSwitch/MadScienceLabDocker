@@ -14,6 +14,10 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
 # The installer writes that key's activation into etc/license under the install prefix —
 # a working credential, not just the key text — so it's deleted immediately after install
 # in this same RUN step to keep the shipped image unlicensed.
+# `cd` below is scoped to this one RUN (extract, install, return, cleanup) and reverted
+# before the instruction ends; WORKDIR would leak an unwanted directory change into later
+# layers, so DL3003 is deliberately suppressed for this line
+# hadolint ignore=DL3003
 RUN --mount=type=secret,id=bullseye_license_key,required=true set -ex \
   && case "$TARGETPLATFORM" in \
        "linux/amd64") BULLSEYE_ARCHIVE=/assets/plugins/bullseye/BullseyeCoverage-9.25.9-Linux-x64.tar.xz ;; \
