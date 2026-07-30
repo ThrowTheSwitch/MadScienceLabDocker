@@ -6,3 +6,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
   && dotnet tool install --global dotnet-reportgenerator-globaltool \
   # Modify the PATH so the new tool is findable, for every container user (dev, root, or other)
   && echo "[[ -d \"/home/dev/.dotnet/tools\" ]] && export PATH=\"$PATH:/home/dev/.dotnet/tools\"" >> /etc/zsh/zshenv ; fi
+
+# Make BullseyeCoverage discoverable on PATH
+# This must come after other PATH-modifying blocks in this file (e.g. reportgenerator,
+# above), since those set PATH to a hardcoded value rather than appending to it
+RUN set -ex \
+  && echo 'export PATH="$PATH:/opt/BullseyeCoverage/bin"' >> /etc/zsh/zshenv

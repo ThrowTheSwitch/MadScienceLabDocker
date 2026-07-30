@@ -6,3 +6,27 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then set -ex \
    && install_packages \
       dotnet-sdk-8.0 \
    ; fi
+
+# Install BullseyeCoverage (code coverage tool)
+# The installer requires a valid license key to unpack the software. The key is supplied 
+# only as a BuildKit secret (never written to a build-arg, image layer, or this repo) via 
+# `--secret id=bullseye_license_key,src=<path>`.
+# The installer writes that key's activation into etc/license under the install prefix —
+# a working credential, not just the key text — so it's deleted immediately after install
+# in this same RUN step to keep the shipped image unlicensed.
+RUN --mount=type=secret,id=bullseye_license_key,required=true set -ex \
+  && case "$TARGETPLATFORM" in \
+       "linux/amd64") BULLSEYE_ARCHIVE=/assets/plugins/bullseye/BullseyeCoverage-9.25.9-Linux-x64.tar.xz ;; \
+       "linux/arm64") BULLSEYE_ARCHIVE=/assets/plugins/bullseye/BullseyeCoverage-9.25.9-Linux-arm64.tar.xz ;; \
+       *) echo "Unsupported platform for BullseyeCoverage: $TARGETPLATFORM" && exit 1 ;; \
+     esac \
+  && mkdir -p /tmp/bullseye-install \
+  && tar -xJf "$BULLSEYE_ARCHIVE" -C /tmp/bullseye-install \
+  && cd /tmp/bullseye-install/BullseyeCoverage-9.25.9 \
+  # Disable shell tracing for this one line only - `set -x` would otherwise echo the
+  # expanded --key argument (the secret value) into the build log
+  && set +x \
+  && ./install --key "$(cat /run/secrets/bullseye_license_key)" --prefix /opt/BullseyeCoverage --search "$PATH" --quiet \
+  && set -x \
+  && rm -f /opt/BullseyeCoverage/etc/license \
+  && cd / && rm -rf /tmp/bullseye-install

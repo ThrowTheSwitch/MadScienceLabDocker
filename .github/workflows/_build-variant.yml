@@ -65,6 +65,9 @@ on:
         required: false
       DOCKERHUB_TOKEN:
         required: false
+      BULLSEYE_LICENSE_KEY:
+        required: false
+        description: 'License key required by the BullseyeCoverage vendor installer (plugins variants only). Passed as a BuildKit build secret, never as a build-arg.'
 
 env:
   IMAGE_URL: throwtheswitch/${{ inputs.image_name }}
@@ -141,6 +144,11 @@ jobs:
           build-args: |
             CONTAINER_VERSION=${{ inputs.version }}
             IMAGE_NAME=${{ inputs.image_name }}
+          # BuildKit build secret consumed by build/plugins/Dockerfile-build's
+          # `RUN --mount=type=secret,id=bullseye_license_key` step (plugins variants only;
+          # harmless no-op for variants that don't mount it)
+          secrets: |
+            bullseye_license_key=${{ secrets.BULLSEYE_LICENSE_KEY }}
           push: ${{ inputs.push }}
           tags: |
             ${{ env.IMAGE_URL }}:${{ inputs.version }}

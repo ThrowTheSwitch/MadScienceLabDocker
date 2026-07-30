@@ -29,6 +29,9 @@ function usage {
   echo "      --platform  Docker target platforms, ex: 'linux/arm64,linux/amd64'"
   echo "      --push      Push a multi-platform Docker image build to its repository (only with --platform)"
   echo "      --validate  Execute a multi-platform build (only with --platform)"
+  echo "      --secret    BuildKit build secret, ex: 'id=bullseye_license_key,src=/path/to/key'"
+  echo "                  Passed through verbatim to 'docker build/buildx build --secret'"
+  echo "                  May be specified multiple times"
   echo "  -d, --debug     Produce full Docker image build log"
   echo ""
   echo "Script options:"
@@ -61,6 +64,9 @@ DOCKERFILE_GEN_DIRS="--dir=build/base"
 PLATFORMS=""
 # Docker buildx command line argument
 PLATFORM_ARGS=""
+
+# Docker/buildx --secret arguments, accumulated across repeatable --secret CLI options
+SECRET_ARGS=""
 
 # Default to standard, simple `docker build`
 BUILD_ACTION="build"
@@ -161,6 +167,18 @@ while [[ $# -gt 0 ]]; do
     --validate)
       # Override default of image build with push to repository
       VALIDATE=true
+      shift
+      ;;
+
+    --secret)
+      if [ -z "$2" ]; then
+        echo ""
+        echo "ERROR: A secret spec (ex: 'id=name,src=path') required for --secret"
+        usage
+      fi
+
+      SECRET_ARGS="$SECRET_ARGS --secret $2"
+      shift
       shift
       ;;
 
@@ -298,7 +316,7 @@ if [ "$BUILD" = true ]; then
   
   # Perform multi-platform build with output as an image or optionally a direct push to the repository
   # Always echo this command to the command line
-  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$IMAGE_TAG" $PLATFORM_ARGS --build-arg CONTAINER_VERSION="$CONTAINER_VERSION" --build-arg IMAGE_NAME="$IMAGE" -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
+  (set -x; docker $BUILD_ACTION $LOG_ARGS -t "$IMAGE":"$IMAGE_TAG" $PLATFORM_ARGS $SECRET_ARGS --build-arg CONTAINER_VERSION="$CONTAINER_VERSION" --build-arg IMAGE_NAME="$IMAGE" -f "$VARIANT_DIR_PATH"/docker/Dockerfile .)
 
   # Capture exit code from attempted Docker image build
   success=$?
