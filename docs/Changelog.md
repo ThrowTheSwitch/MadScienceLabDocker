@@ -6,6 +6,8 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 # [1.2.0] Prerelease
 
+ℹ️ Docker images still contain Ceedling 1.1.0.
+
 ## 🌟 Added
 
 - Added [BullseyeCoverage](https://www.bullseye.com) tooling to the plugins variants (requires license to activate). This supports the Ceedling Bullseye plugin.
