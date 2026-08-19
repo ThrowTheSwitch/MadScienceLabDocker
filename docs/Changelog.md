@@ -4,6 +4,16 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+# [1.1.5] — 2026-08-19
+
+## 🌟 Added
+
+- Updated Ceedling to 1.1.5 gem
+
+## ⚠️ Fixed
+
+- Fixed Github workflows to push images to Docker Hub without leading `v` in semantic tag.
+
 # [1.1.4] — 2026-08-13
 
 ## 🌟 Added
