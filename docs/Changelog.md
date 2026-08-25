@@ -4,6 +4,14 @@ This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+# [1.1.6] — 2026-08-25
+
+## 🌟 Added
+
+- Updated Ceedling to 1.1.6 gem
+
+---
+
 # [1.1.5] — 2026-08-19
 
 ## 🌟 Added
